@@ -1,15 +1,25 @@
 Slut
 ====
 
-HTML5 - PHP multiple huge files upload
+The project aim to upload multiple files and encrypt them on the client side.
 
-The project aim to upload your files and encrypt them on the client side.
+### Technologies:
+* HTML5
+* JavaScript
+* PHP
 
-Now features:
+### Dependency:
+* None
+
+### Now features:
 * Hudge file upload
 * Progress bar
 
 
-Todo:
+### Todo:
 * AES encryption on client side
 * Multiple files upload
+
+Licence:
+
+[GNU GPLv3](http://www.gnu.org/licenses/gpl-3.0.html)

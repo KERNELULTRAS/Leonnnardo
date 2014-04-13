@@ -1,5 +1,5 @@
 Slut
-====
+----
 
 The project aim to upload multiple files and encrypt them on the client side.
 
@@ -20,6 +20,5 @@ The project aim to upload multiple files and encrypt them on the client side.
 * AES encryption on client side
 * Multiple files upload
 
-Licence:
-
+### Licence:
 [GNU GPLv3](http://www.gnu.org/licenses/gpl-3.0.html)

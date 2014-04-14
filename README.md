@@ -1,7 +1,7 @@
 Slut
 ----
 
-The project aim to upload multiple files and encrypt them on the client side.
+The project aim to upload/download multiple files and encrypt them on the client side.
 
 ### Technologies:
 * HTML5
@@ -17,8 +17,9 @@ The project aim to upload multiple files and encrypt them on the client side.
 
 
 ### Todo:
+* Download
 * AES encryption on client side
-* Multiple files upload
+* Multiple files upload/dowload
 
 ### Licence:
 [GNU GPLv3](http://www.gnu.org/licenses/gpl-3.0.html)

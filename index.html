@@ -1,13 +1,13 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html>
   </head>
     <script type="text/javascript">
       const BYTES_PER_CHUNK = 1024 * 1024; // 1MB chunk sizes.
       var slices; // slices, value that gets decremented
       var slicesTotal; // total amount of slices, constant once calculated
-      
+
       /**
-       * Calculates slices and indirectly uploads a chunk of a file via uploadFile()
+      * Calculates slices and indirectly uploads a chunk of a file via uploadFile()
       **/
       function sendRequest () {
         var xhr;
@@ -16,8 +16,9 @@
         var start = 0;
         var end;
         var index = 0;
-      
-        // calculate the number of slices 
+
+        document.getElementById("back_message").innerHTML = "";
+        // calculate the number of slices
         slices = Math.ceil (blob.size / BYTES_PER_CHUNK);
         slicesTotal = slices;
       
@@ -26,16 +27,16 @@
           if (end > blob.size) {
             end = blob.size;
           }
-      
+
           uploadFile (blob, index, start, end);
       
           start = end;
           index++;
         }
       }
-      
+
       /**
-       * Blob to ArrayBuffer (needed ex. on Android 4.0.4)
+      * Blob to ArrayBuffer (needed ex. on Android 4.0.4)
       **/
       var str2ab_blobreader = function (str, callback) {
         var blob;
@@ -54,24 +55,24 @@
         f.readAsArrayBuffer (blob);
       }
       /**
-       * Performs actual upload, adjustes progress bars
-       *
-       * @param blob
-       * @param index
-       * @param start
-       * @param end
-       */
+      * Performs actual upload, adjustes progress bars
+      *
+      * @param blob
+      * @param index
+      * @param start
+      * @param end
+      */
       function uploadFile (blob, index, start, end) {
         var xhr;
         var end;
         var chunk;
-      
+
         xhr = new XMLHttpRequest ();
-      
+
         xhr.onreadystatechange = function () {
           if (xhr.readyState == 4) {
             if (xhr.responseText) {
-              alert (xhr.responseText);
+              document.getElementById("back_message").innerHTML=xhr.responseText;
             }
             slices--;
             // if we have finished all slices
@@ -80,58 +81,57 @@
             }
           }
         };
-      
+
         if (blob.webkitSlice) {
           chunk = blob.webkitSlice(start, end);
         } else if (blob.mozSlice) {
           chunk = blob.mozSlice (start, end);
         } else {
-          chunk = blob.slice (start, end); 
+          chunk = blob.slice (start, end);
         }
-      
+
         xhr.addEventListener ("load", function (evt) {
-          var percentageDiv = document.getElementById ("percent");  
-      		  var progressBar = document.getElementById ("progressBar"); 
-      
-      	   progressBar.max = progressBar.value = 100;  
-      	   percentageDiv.innerHTML = "100%";  
+        var percentageDiv = document.getElementById ("percent");
+        var progressBar = document.getElementById ("progressBar");
+
+        progressBar.max = progressBar.value = 100;
+        percentageDiv.innerHTML = "100%";
         }, false);
-      
-      	 xhr.upload.addEventListener ("progress", function (evt) {
-      		  var percentageDiv = document.getElementById ("percent");  
-      		  var progressBar = document.getElementById ("progressBar");
-      
-      		  if (evt.lengthComputable) {
-            progressBar.max = slicesTotal;  
-            progressBar.value = index;  
-            percentageDiv.innerHTML = Math.round (index/slicesTotal * 100) + "%";  
+
+        xhr.upload.addEventListener ("progress", function (evt) {
+          var percentageDiv = document.getElementById ("percent");
+          var progressBar = document.getElementById ("progressBar");
+
+          if (evt.lengthComputable) {
+            progressBar.max = slicesTotal;
+            progressBar.value = index;
+            percentageDiv.innerHTML = Math.round (index/slicesTotal * 100) + "%";
           }
         }, false);
-      
-      
+
         xhr.open ("post", "upload.php", true);
-        xhr.setRequestHeader ("X-File-Name", blob.name);             // custom header with filename and full size
+        xhr.setRequestHeader ("X-File-Name", blob.name); // custom header with filename and full size
         xhr.setRequestHeader ("X-File-Size", blob.size);
-        xhr.setRequestHeader ("X-Index", index);                     // part identifier
-          
-        if (blob.webkitSlice) {                                     // android default browser in version 4.0.4 has webkitSlice instead of slice()
-          var buffer = str2ab_blobreader (chunk, function (buf) {   // we cannot send a blob, because body payload will be empty
-            xhr.send (buf);                                      // thats why we send an ArrayBuffer
-          });	
+        xhr.setRequestHeader ("X-Index", index); // part identifier
+
+        if (blob.webkitSlice) { // android default browser in version 4.0.4 has webkitSlice instead of slice()
+          var buffer = str2ab_blobreader (chunk, function (buf) { // we cannot send a blob, because body payload will be empty
+            xhr.send (buf); // thats why we send an ArrayBuffer
+          });
         } else {
-          xhr.send (chunk);                                        // but if we support slice() everything should be ok
+          xhr.send (chunk); // but if we support slice() everything should be ok
         }
       }
-      
+
       /**
-       *  Function executed once all of the slices has been sent, "TO MERGE THEM ALL!"
+      * Function executed once all of the slices has been sent, "TO MERGE THEM ALL!"
       **/
       function mergeFile (blob) {
         var xhr;
         var fd;
-      
+
         xhr = new XMLHttpRequest ();
-      
+
         fd = new FormData ();
         fd.append ("name", blob.name);
         fd.append ("index", slicesTotal);
@@ -142,10 +142,8 @@
     </script>
   </head>
   <body>
-    <div id="percent">Waiting...</div>
-    
     <input type="file" name="file" id="fileToUpload"> <button onclick="sendRequest()">Send</button>
-    
-    <progress id="progressBar" value="0" max="100"></progress>
-  </body> 
+    <progress id="progressBar" value="0" max="100"></progress><span id="percent"></span>
+    <p><span id="back_message"></span></p>
+  </body>
 <html>

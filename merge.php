@@ -29,6 +29,6 @@ for ($i = 0; $i < $_REQUEST['index']; $i++) {
 
 fclose ($dst);
 rmdir ("uploads/" . $_REQUEST['name']);
-copy ("uploads/full_" . $_REQUEST['name'], "uploads/" . $_REQUEST['name']);
-unlink ("uploads/full_" . $_REQUEST['name']);
+rename ("uploads/full_" . $_REQUEST['name'], "uploads/" . $_REQUEST['name']);
+// unlink ("uploads/full_" . $_REQUEST['name']);
 }

@@ -1,21 +1,21 @@
 <?php
-// name must be in proper format
+$filename = $_REQUEST['name'];
+// Name must be set 
 if (!isset ($_REQUEST['name'])) {
-  throw new Exception('Name required');
-}
-if (!preg_match ('/^[-a-z0-9_][-a-z0-9_.]*$/i', $_REQUEST['name'])) {
-  throw new Exception ('Name error');
+  echo 'Name required';
 }
 
 // index must be set, and number
 if (!isset ($_REQUEST['index'])) {
-  throw new Exception ('Index required');
+  echo 'Index required';
 }
 
 if (!preg_match ('/^[0-9]+$/', $_REQUEST['index'])) {
-  throw new Exception ('Index error');
+  echo 'Index error';
 }
 
+
+if (!is_file ("uploads/" . $filename)) {
 $target = "uploads/full_" . $_REQUEST['name'];
 $dst = fopen ($target, 'wb');
 
@@ -31,3 +31,4 @@ fclose ($dst);
 rmdir ("uploads/" . $_REQUEST['name']);
 copy ("uploads/full_" . $_REQUEST['name'], "uploads/" . $_REQUEST['name']);
 unlink ("uploads/full_" . $_REQUEST['name']);
+}

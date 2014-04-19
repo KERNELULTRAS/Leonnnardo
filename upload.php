@@ -3,39 +3,32 @@ $filename   = $_SERVER['HTTP_X_FILE_NAME'];
 $filesize   = $_SERVER['HTTP_X_FILE_SIZE'];
 $index      = $_SERVER['HTTP_X_INDEX'];
 
-// name must be in proper format
+// Name must be set
 if (!isset ($_SERVER['HTTP_X_FILE_NAME'])) {
-    throw new Exception ('Name required');
-}
-if (!preg_match ('/^[-a-z0-9_][-a-z0-9_.]*$/i', $_SERVER['HTTP_X_FILE_NAME'])) {
-    throw new Exception ('Name error');
+  echo 'Name required';
 }
 
-// index must be set, and number
+// Index must be set
 if (!isset ($_SERVER['HTTP_X_INDEX'])) {
-    throw new Exception ('Index required');
+  echo 'Index required';
 }
+// Index must be number
 if (!preg_match ('/^[0-9]+$/', $_SERVER['HTTP_X_INDEX'])) {
-    throw new Exception ('Index error');
+  echo 'Index error';
 }
 
-// we store chunks in directory named after filename
-if (!file_exists ("uploads/" . $filename .'/')){
-	mkdir ("uploads/" . $filename .'/');
+// If file exist on server dont upload it
+if (is_file ("uploads/" . $filename)) {
+  echo 'File exists';
 }
-
-$target = "uploads/" . $filename . '/' . $filename . '-' . $index;
-
-
-/*
-    // alternative way
-    $putdata = fopen("php://input", "r");
-    $fp = fopen($target, "w");
-    while ($data = fread($putdata, 1024))
-    fwrite($fp, $data);
-    fclose($fp);
-    fclose($putdata);
-*/
-
-$input = fopen ("php://input", "r");
-file_put_contents($target, $input);
+else {
+  // we store chunks in directory named after filename
+  if (!file_exists ("uploads/" . $filename .'/')){
+    mkdir ("uploads/" . $filename .'/');
+  }
+  
+  $target = "uploads/" . $filename . '/' . $filename . '-' . $index;
+  
+  $input = fopen ("php://input", "r");
+  file_put_contents ($target, $input);
+}

@@ -12,7 +12,7 @@ The project aim to upload/download multiple files and encrypt them on the client
 * None
 
 ### Now features:
-* Hudge file upload
+* Hudge file upload (split to chunks)
 * Progress bar
 
 

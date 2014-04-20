@@ -1,23 +1,24 @@
 <!DOCTYPE html>
 <html>
   </head>
+    <meta charset="UTF-8">
     <script type="text/javascript">
-      const BYTES_PER_CHUNK = 1024 * 1024; // 1MB chunk sizes.
-      var slices; // slices, value that gets decremented
-      var slicesTotal; // total amount of slices, constant once calculated
+      const BYTES_PER_CHUNK = 512 * 1024; // Chunk sizes.
+      var slices; // Chunks, value that gets decremented
+      var slicesTotal; // Total amount of chunks, constant once calculated
 
-      /**
-      * Calculates slices and indirectly uploads a chunk of a file via uploadFile()
-      **/
+      //####################################################
+      // Calculates chunks
+      //####################################################
       function sendRequest () {
         var xhr;
-        var blob = document.getElementById ('fileToUpload').files[0];
+        var blob = document.getElementById("fileToUpload").files[0];
+        // document.getElementById("back_message")
       
         var start = 0;
         var end;
         var index = 0;
 
-        document.getElementById("back_message").innerHTML = "";
         // calculate the number of slices
         slices = Math.ceil (blob.size / BYTES_PER_CHUNK);
         slicesTotal = slices;
@@ -34,10 +35,9 @@
           index++;
         }
       }
-
-      /**
-      * Blob to ArrayBuffer (needed ex. on Android 4.0.4)
-      **/
+      //####################################################
+      // Blob to ArrayBuffer (needed ex. on Android 4.0.4)
+      //####################################################
       var str2ab_blobreader = function (str, callback) {
         var blob;
         BlobBuilder = window.MozBlobBuilder || window.WebKitBlobBuilder || window.BlobBuilder;
@@ -54,14 +54,9 @@
         }
         f.readAsArrayBuffer (blob);
       }
-      /**
-      * Performs actual upload, adjustes progress bars
-      *
-      * @param blob
-      * @param index
-      * @param start
-      * @param end
-      */
+      //####################################################
+      // Upload chunks and adjustes progress bars
+      //####################################################
       function uploadFile (blob, index, start, end) {
         var xhr;
         var end;
@@ -70,10 +65,7 @@
         xhr = new XMLHttpRequest ();
 
         xhr.onreadystatechange = function () {
-          if (xhr.readyState == 4) {
-            if (xhr.responseText) {
-              document.getElementById("back_message").innerHTML=xhr.responseText;
-            }
+          if (xhr.readyState == 4 && xhr.status == 200) {
             slices--;
             // if we have finished all slices
             if (slices == 0) {
@@ -83,33 +75,24 @@
         };
 
         if (blob.webkitSlice) {
-          chunk = blob.webkitSlice(start, end);
+          chunk = blob.webkitSlice (start, end);
         } else if (blob.mozSlice) {
           chunk = blob.mozSlice (start, end);
         } else {
           chunk = blob.slice (start, end);
         }
 
-        xhr.addEventListener ("load", function (evt) {
         var percentageDiv = document.getElementById ("percent");
         var progressBar = document.getElementById ("progressBar");
 
-        progressBar.max = progressBar.value = 100;
-        percentageDiv.innerHTML = "100%";
-        }, false);
+        percentageDiv.innerHTML = "0%";
+        progressBar.max = slicesTotal;
 
-        xhr.upload.addEventListener ("progress", function (evt) {
-          var percentageDiv = document.getElementById ("percent");
-          var progressBar = document.getElementById ("progressBar");
+        progressBar.value = slicesTotal - slices;
 
-          if (evt.lengthComputable) {
-            progressBar.max = slicesTotal;
-            progressBar.value = index;
-            percentageDiv.innerHTML = Math.round (index/slicesTotal * 100) + "%";
-          }
-        }, false);
+        percentageDiv.innerHTML = Math.round ((slicesTotal-slices)/slicesTotal * 100) + "%";
 
-        xhr.open ("post", "upload.php", true);
+        xhr.open ("post", "upload.php", false);
         xhr.setRequestHeader ("X-File-Name", blob.name); // custom header with filename and full size
         xhr.setRequestHeader ("X-File-Size", blob.size);
         xhr.setRequestHeader ("X-Index", index); // part identifier
@@ -123,26 +106,57 @@
         }
       }
 
-      /**
-      * Function executed once all of the slices has been sent, "TO MERGE THEM ALL!"
-      **/
+      //#####################################################
+      // Merge all uploaded chunks and adjustes progress bars
+      //#####################################################
       function mergeFile (blob) {
         var xhr;
         var fd;
-
+        var percentageDiv = document.getElementById ("percent");
+        var progressBar = document.getElementById ("progressBar");
+        
+        percentageDiv.innerHTML = "100%";
+        progressBar.value = slicesTotal;
+        document.getElementById("back_message").innerHTML="Procesing ...";
         xhr = new XMLHttpRequest ();
 
         fd = new FormData ();
         fd.append ("name", blob.name);
         fd.append ("index", slicesTotal);
-      
-        xhr.open ("POST", "merge.php", true);
+
+        xhr.open ("POST", "merge.php", false);
         xhr.send (fd);
+        document.getElementById("back_message").innerHTML=xhr.responseText;
+      }
+
+      //#####################################################
+      // Start script after click on Send
+      // Check is file exists
+      //#####################################################
+      function start () {
+        var xhr_fe;
+        var blob = document.getElementById ('fileToUpload').files[0];
+
+        xhr_fe = new XMLHttpRequest ();
+
+        xhr_fe.onreadystatechange = function () {
+          if (xhr_fe.readyState == 4) {
+            if (xhr_fe.responseText != "File exists") {
+              document.getElementById("back_message").innerHTML='Uploading ...';
+              document.getElementById ("progressBar").removeAttribute("value");
+              sendRequest ();
+            }
+          }
+        };
+
+        xhr_fe.open ("POST", "file_exists.php", false);
+        xhr_fe.setRequestHeader ("X-File-Name", blob.name);
+        xhr_fe.send ();
       }
     </script>
   </head>
   <body>
-    <input type="file" name="file" id="fileToUpload"> <button onclick="sendRequest()">Send</button>
+    <input type="file" name="file" id="fileToUpload"> <button onclick="start()">Send</button>
     <progress id="progressBar" value="0" max="100"></progress><span id="percent"></span>
     <p><span id="back_message"></span></p>
   </body>

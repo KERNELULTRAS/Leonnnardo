@@ -25,10 +25,13 @@ else {
   // we store chunks in directory named after filename
   if (!file_exists ("uploads/" . $filename .'/')){
     mkdir ("uploads/" . $filename .'/');
+    chmod ("uploads/" . $filename .'/', 0777);
   }
   
   $target = "uploads/" . $filename . '/' . $filename . '-' . $index;
   
   $input = fopen ("php://input", "r");
   file_put_contents ($target, $input);
+  chmod ("uploads/" . $filename . '/' . $filename . '-' . $index, 0777);
+  echo "uploads/" . $filename . '/' . $filename . '-' . $index . "\n";
 }

@@ -5,7 +5,7 @@
     <script type="text/javascript">
       // Global variables
       const BYTES_PER_CHUNK = 512 * 1024; // Chunk sizes.
-      var slices; // Chunks, value that gets decremented
+      var chunks; // Chunks, value that gets decremented
       var chunks_total; // Total  chunks
       var blob_content = new Blob();
 
@@ -21,8 +21,8 @@
         var index = 0;
 
         // Calculate the number of chunks
-        slices = Math.ceil (blob.size / BYTES_PER_CHUNK);
-        chunks_total = slices;
+        chunks = Math.ceil (blob.size / BYTES_PER_CHUNK);
+        chunks_total = chunks;
 
         while (start < blob.size) {
           end = start + BYTES_PER_CHUNK;
@@ -47,9 +47,9 @@
 
         xhr.onreadystatechange = function () {
           if (xhr.readyState == 4 && xhr.status == 200) {
-            slices--;
-            // if we have finished all slices
-            if (slices == 0) {
+            chunks--;
+            // if we have finished all chunks
+            if (chunks == 0) {
                mergeFile (blob);
             }
           }
@@ -75,9 +75,9 @@
         percentageDiv.innerHTML = "0%";
         progressBar.max = chunks_total;
 
-        progressBar.value = chunks_total - slices;
+        progressBar.value = chunks_total - chunks;
 
-        percentageDiv.innerHTML = Math.round ((chunks_total-slices)/chunks_total * 100) + "%";
+        percentageDiv.innerHTML = Math.round ((chunks_total-chunks)/chunks_total * 100) + "%";
 
         xhr.open ("post", "upload.php", false);
         xhr.setRequestHeader ("X-File-Name", blob.name); // custom header with filename and full size

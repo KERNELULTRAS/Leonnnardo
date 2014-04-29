@@ -36,9 +36,6 @@
         chunk = blob.slice (start, end);
         index++;
 
-        // document.getElementById("back_message").innerHTML = "Reading " + blob.name + " " + index;
-
-        // var worker_loop = new Worker('worker_loop.js');
         var worker_reader = new Worker('worker_reader.js');
         var worker_uploader = new Worker('worker_uploader.js');
   
@@ -50,13 +47,9 @@
         }
         
         worker_uploader.onmessage = function (event) {
-          // upload_loop ();
           if (index < chunks_total) {
             start = end;
             end = start + BYTES_PER_CHUNK;
-            // upload_file ();
-            // chunk = blob.slice (start, end);
-            // index++;
             var percentageDiv = document.getElementById ("percent");
             var progressBar = document.getElementById ("progressBar");
     
@@ -68,13 +61,13 @@
             percentageDiv.innerHTML = Math.round (index/chunks_total * 100) + "%";
             document.getElementById("back_message").innerHTML = "Reading " + blob.name + " " + index;
             worker_uploader.terminate();
-            // return worker_reader.postMessage (chunk);
             return upload_file ();
           }
           else {
             upload_merge ();
           }
         }
+        document.getElementById("back_message").innerHTML = "Reading " + blob.name + " " + index;
         worker_reader.postMessage(chunk);
       }
 

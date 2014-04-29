@@ -19,7 +19,7 @@ if (!is_file ("uploads/" . $filename)) {
   $target = "uploads/full_" . $_REQUEST['name'];
   $dst = fopen ($target, 'wb');
   
-  for ($i = 0; $i < $_REQUEST['index']; $i++) {
+  for ($i = 1; $i <= $_REQUEST['index']; $i++) {
       $slice = 'uploads/' . $_REQUEST['name'] . '/' . $_REQUEST['name'] . '-' . $i;
       $src = fopen ($slice, 'rb');
       stream_copy_to_stream ($src, $dst);

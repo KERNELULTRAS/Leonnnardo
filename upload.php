@@ -2,6 +2,7 @@
 $filename   = $_SERVER['HTTP_X_FILE_NAME'];
 $filesize   = $_SERVER['HTTP_X_FILE_SIZE'];
 $index      = $_SERVER['HTTP_X_INDEX'];
+$chunk      = $_SERVER['HTTP_X_CHUNK'];
 
 // Name must be set
 if (!isset ($_SERVER['HTTP_X_FILE_NAME'])) {
@@ -33,5 +34,5 @@ else {
   $input = fopen ("php://input", "r");
   file_put_contents ($target, $input);
   chmod ("uploads/" . $filename . '/' . $filename . '-' . $index, 0777);
-  echo "uploads/" . $filename . '/' . $filename . '-' . $index . "\n";
+  echo "Uploading ...";
 }

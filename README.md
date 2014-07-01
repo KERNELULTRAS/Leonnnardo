@@ -9,7 +9,7 @@ The project aim to upload/download multiple files and encrypt them on the client
 * PHP
 
 ### Dependency:
-* None
+* ASMCrypto
 
 ### Now features:
 * Hudge (GB) file upload (split to chunks)

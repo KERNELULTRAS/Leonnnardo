@@ -2,11 +2,28 @@
 <html>
   <head>
     <meta charset="UTF-8">
-    <script type="text/javascript" src="scripts/upload.js"></script>
+    <script type="text/javascript" src="javascript/upload.js"></script>
+    <script type="text/javascript" src="javascript/download.js"></script>
+    <script type="text/javascript" src="javascript/remove_file.js"></script>
+    <script type="text/javascript" src="javascript/list_files_on_server.js"></script>
+    <script type="text/javascript" src="javascript/asmcrypto.js"></script>
+    <script type="text/javascript" src="javascript/filesaver.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/classic.css">
   </head>
-  <body>
-    <input type="file" name="file" id="fileToUpload"> <button onclick="upload_start()">Send</button>
-    <progress id="progressBar" value="0" max="100"></progress><span id="percent"></span>
-    <p><span id="back_message"></span></p>
+  <body onload="list_files_on_server()">
+    <div class="head">
+      <strong>SLUT</strong><span class="slogan">best server for your security</span>
+    </div>
+    <div class="upload">
+      <h1>Upload</h1>
+      <input type="file" name="file" id="fileToUpload"> <button onclick="upload()">Send</button>
+      <progress id="progressBar" value="0" max="100"></progress><span id="percent"></span>
+      <p><span id="back_message"></span></p>
+    </div>
+    <div class="download">
+      <h1>Download</h1>
+      <button onclick="list_files_on_server()">Refresh</button>
+      <p id="files"></p>
+    </div>
   </body>
 <html>

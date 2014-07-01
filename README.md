@@ -12,14 +12,20 @@ The project aim to upload/download multiple files and encrypt them on the client
 * None
 
 ### Now features:
-* Hudge file upload (split to chunks)
+* Hudge (GB) file upload (split to chunks)
+* Encrypt content in browser (AES CBC)
+* Encrypt file name in browser (AES CBC)
+* Remove file
 * Progress bar
-
+* Fast
+* Easy code :)
+* Wokers (working on background)
 
 ### Todo:
 * Download
-* AES encryption on client side
+* AES dencryption on client side and download
 * Multiple files upload/dowload
+* Optimize code
 
 ### Licence:
 [GNU GPLv3](http://www.gnu.org/licenses/gpl-3.0.html)

@@ -19,6 +19,12 @@ $file_size     = $_SERVER['HTTP_X_FILE_SIZE']; // Size in bytes
 $index        = $_SERVER['HTTP_X_INDEX']; // Index of chunk
 $chunks_total = $_SERVER['HTTP_X_CHUNKS_TOTAL']; // Total of chunks
 
+// If directory don't exist create him
+if (!is_dir(upload)) {
+  mkdir("upload");
+  chmod("upload", 0777);
+}
+
 // file_put_contents ("log" . $index, $cur_name);
 
 //#####################################################

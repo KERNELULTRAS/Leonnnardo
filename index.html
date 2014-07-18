@@ -9,6 +9,7 @@
     <script type="text/javascript" src="javascript/asmcrypto.js"></script>
     <script type="text/javascript" src="javascript/filesaver.js"></script>
     <link rel="stylesheet" type="text/css" href="css/classic.css">
+    <link rel="stylesheet" type="text/css" href="css/app.css">
   </head>
   <body onload="list_files_on_server()">
     <div class="head">
@@ -18,12 +19,45 @@
       <h1>Upload</h1>
       <input type="file" name="file" id="fileToUpload"> <button onclick="upload()">Send</button>
       <progress id="progressBar" value="0" max="100"></progress><span id="percent"></span>
-      <p><span id="back_message"></span></p>
+      <p><span id="status"></span></p>
     </div>
     <div class="download">
       <h1>Download</h1>
       <button onclick="list_files_on_server()">Refresh</button>
       <p id="files"></p>
     </div>
+<header>
+  <button id="openFSButton" onclick="openFS();">Open</button>
+  <button onclick="clearFS();">Remove all</button>
+  <button onclick="getAllEntries(cwd);">Refresh</button>
+  <span>
+    <input type="text" placeholder="Folder name"><button onclick="mkdir(this.previousSibling);" class="inner">Create</button>
+  </span>
+  <span>
+    <input type="text" placeholder="File name"><button onclick="create(this.previousSibling);" class="inner">New</button>
+  </span>
+  <button onclick="create('log.loggg')" >LOOOG</button>
+</header>
+<p>Tip: add files by dragging them in from your desktop.</p>
+<div class="panel">
+  <section>
+    <div id="entries"></div>
+  </section>
+  <section>
+    <ul id="entries2"></ul>
+  </section>
+</div>
+<section class="panel">
+  <div id="log"></div>
+</section>
+<section id="preview">
+</section>
+
+<script src="javascript/idb.filesystem.js" defer></script>
+<script src="javascript/logger.js" defer></script>
+<script src="javascript/dnd.js" defer></script>
+<script src="javascript/app.js"defer></script>
+
+
   </body>
 <html>

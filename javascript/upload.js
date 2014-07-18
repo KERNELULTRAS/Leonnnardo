@@ -17,6 +17,7 @@ var index; // File index
 var browser; // Browser name
 var blob = new Blob ();
 var pseudo_name; // Numerical name on server
+var fs = null; // File system name
 
 //#####################################################
 // Start script after click on Send
@@ -43,11 +44,11 @@ function upload () {
   xhr_fe.send ();
 
   if (xhr_fe.responseText == "Uploading ...") {
-    document.getElementById ("back_message").innerHTML = xhr_fe.responseText;
+    document.getElementById ("status").innerHTML = xhr_fe.responseText;
     upload_start ();
   }
   else {
-    document.getElementById ("back_message").innerHTML = xhr_fe.responseText;
+    document.getElementById ("status").innerHTML = xhr_fe.responseText;
   }
 }
 
@@ -101,7 +102,7 @@ function upload_file () {
 
   // Event worker - after successfully read chunk
   worker_reader.onmessage = function (event) {
-    document.getElementById ("back_message").innerHTML = "Encrypt " + index + "/" + chunks_total;
+    document.getElementById ("status").innerHTML = "Encrypt " + index + "/" + chunks_total;
     // Encrypt content to ArrayBuffer
     var encrypted = asmCrypto.AES_CBC.encrypt (event.data, "passwordpassword");
     var blob_name = blob.name;
@@ -119,7 +120,7 @@ function upload_file () {
       worker_reader.terminate ();
     }
     // Display status encoding
-    document.getElementById ("back_message").innerHTML = "Upload " + index + "/" + chunks_total;
+    document.getElementById ("status").innerHTML = "Upload " + index + "/" + chunks_total;
     // Call worker to chunk upload
     return worker_uploader.postMessage (upload_array);
   }
@@ -146,7 +147,7 @@ function upload_file () {
       percentageDiv.innerHTML = Math.round (index/chunks_total * 100) + "%";
 
       // Display status Reading
-      document.getElementById ("back_message").innerHTML = "Reading " + index + "/" + chunks_total;
+      document.getElementById ("status").innerHTML = "Reading " + index + "/" + chunks_total;
       // Workaround for FireFox and Chrome
       // Firefox without worker.terminate eats memory
       // Chrome with worker.terminate freezes
@@ -165,6 +166,6 @@ function upload_file () {
     }
   }
   // Display status reading
-  document.getElementById ("back_message").innerHTML = "Reading " + index + "/" + chunks_total;
+  document.getElementById ("status").innerHTML = "Reading " + index + "/" + chunks_total;
   worker_reader.postMessage (chunk);
 }

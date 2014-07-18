@@ -9,9 +9,11 @@
 // http://www.gnu.org/copyleft/gpl.html
 //#####################################################
 
+// KURWA KEĎ JE CHUNK LEN JEDEN ČAS SA DO NŹAVU MUSÍ DOPLNI5 HNEĎ
+
 $file_name    = $_SERVER['HTTP_X_FILE_NAME']; // File name
 if (isset ($_SERVER['HTTP_X_PSEUDO_NAME'])) {
-  $cur_name   = $_SERVER['HTTP_X_PSEUDO_NAME']; // File name as number
+  $cur_name   = $_SERVER['HTTP_X_PSEUDO_NAME']; // File name as file:number:chunks_total:file_size:unixtime
 }
 $file_size     = $_SERVER['HTTP_X_FILE_SIZE']; // Size in bytes
 $index        = $_SERVER['HTTP_X_INDEX']; // Index of chunk
@@ -25,6 +27,8 @@ $chunks_total = $_SERVER['HTTP_X_CHUNKS_TOTAL']; // Total of chunks
 // Real file name is encrypt in this directery stored
 // in file ".name"
 //#####################################################
+// File name as file:number:chunks_total:file_size
+// Time is set in last chunk
 function get_name () {
   global $chunks_total, $file_size;
   $currently_name = 1;
@@ -56,39 +60,45 @@ if (!isset ($chunks_total)) {
   echo 'ERROR: Index required';
 }
 
-// Index must be number
+// Chunks_total must be number
 if (!preg_match ('/^[0-9]+$/', $chunks_total)) {
   echo 'ERROR: Chunks total must be number';
 }
 
+// Set path
+$path = "../uploads/file:" . $cur_name . ":" . $chunks_total . ":" . $file_size;
+
 // If file exist on server dont upload it
 if ($index == "1") {
   $cur_name = get_name(); // Get fist free number as file name
-  if (!file_exists ("../uploads/file:" . $cur_name . ":" . $chunks_total . ":" . $file_size)) {
-    mkdir ("../uploads/file:" . $cur_name . ":" . $chunks_total . ":" . $file_size);
-    chmod ("../uploads/file:" . $cur_name . ":" . $chunks_total . ":" . $file_size, 0777);
-    file_put_contents ('../uploads/file:' . $cur_name . ':' . $chunks_total . ":" . $file_size . '/' . 'name', $file_name);
-    chmod ("../uploads/file:" . $cur_name . ":" . $chunks_total . ":" . $file_size . "/"."name", 0777);
+  if (!file_exists ($path)) {
+    mkdir ($path);
+    chmod ($path, 0777);
+    file_put_contents ($path . '/' . 'name', $file_name);
+    chmod ($path . "/"."name", 0777);
   }
 
-  $target = "../uploads/file:" . $cur_name . ":" . $chunks_total . ":" . $file_size . "/" . $index;
+  $target = $path . "/" . $index;
 
+  // Get sended data
   $input = fopen ("php://input", "r");
   file_put_contents ($target, $input);
 
-  chmod ("../uploads/file:" . $cur_name . ":" . $chunks_total . ":" . $file_size . "/" . $index, 0777);
+  chmod ($path . "/" . $index, 0777);
+  // Send
   echo $cur_name;
 }
 else {
-  $target = "../uploads/file:" . $cur_name . ":" . $chunks_total . ":" . $file_size . "/" . $index;
+  $target = $path . "/" . $index;
 
+  // Get sended data
   $input = fopen ("php://input", "r");
   file_put_contents ($target, $input);
 
-  chmod ("../uploads/file:" . $cur_name . ":" . $chunks_total . ":" . $file_size . "/" . $index, 0777);
+  chmod ($path . "/" . $index, 0777);
   if ($index == $chunks_total) {
     $file_time = time();
-    rename ("../uploads/file:" . $cur_name . ":" . $chunks_total . ":" . $file_size, "../uploads/file:" . $cur_name . ":" . $chunks_total . ":" . $file_size . ":" . $file_time);
+    rename ($path, $path . ":" . $file_time);
   }
   echo $cur_name;
 }

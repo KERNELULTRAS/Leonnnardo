@@ -11,18 +11,22 @@ function list_files_on_server () {
 
   var xhr = new XMLHttpRequest ();
 
+  // Call php script
   xhr.open ("POST", "php/list_files_on_server.php", false);
   xhr.send ();
   var json_data_files = (xhr.responseText);
+  // Parse to diles to array
   var obj_files = JSON.parse (json_data_files);
   var files = "";
   files = '<table>';
+  // Print files
   for (var index in obj_files) {
     if (index.substring(0, 1) != ".") {
       // Extract file parameters
       var file_parameters = index.split(":");
       // Get file size
       var file_size = file_parameters[3];
+      // Convert to GB, MB, kB
       if (file_size > 1000000000) {
         file_size = (file_size / 1000000000).toFixed(2) + "GB";
       }
@@ -33,7 +37,6 @@ function list_files_on_server () {
         file_size = (file_size / 1000).toFixed(2) + "kB";
       }
       // Get unix timestamp
-      // var file_time = file_parameters[4];
       var date = new Date(file_parameters[4]*1000);
       var file_time = date.toLocaleString();
       // Decrypt file name
@@ -49,5 +52,6 @@ function list_files_on_server () {
     }
   }
   files += '</table>';
+  // Write files to element "files"
   document.getElementById ("files").innerHTML = files;
 }

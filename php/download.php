@@ -37,6 +37,7 @@ if (file_exists ("../uploads/" . $file_name)) {
   fclose ($handle);
   $file_size = strlen ($atachment);
 
+  // Send header
   header ('Content-Description: File Transfer');
   header ('Pragma: public'); 	// required
   header ('Expires: 0');		// no cache
@@ -52,6 +53,7 @@ if (file_exists ("../uploads/" . $file_name)) {
   ob_clean ();
   flush ();
 
+  // Send file
   echo $atachment;
 }
 ?>

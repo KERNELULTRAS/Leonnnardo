@@ -10,8 +10,6 @@
 //#####################################################
 $dir_array = scandir ("../uploads");
 $dir_array_named = [];
-// asort ($dir_array);
-// echo json_encode ($dir_array);
 foreach($dir_array as $child) {
   $file_name = file_get_contents ("../uploads/" . $child . "/". "name");
   $dir_array_named[$child] = $file_name;

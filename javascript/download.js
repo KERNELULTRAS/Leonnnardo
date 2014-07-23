@@ -8,304 +8,146 @@
 // http://www.gnu.org/copyleft/gpl.html
 //#####################################################
 function download (file_name, file_name_dec) {
-
-  // saveAs (blob_all, decodeURIComponent (file_name_dec));
   // Extract file parameters
   var file_parameters = file_name.split(":");
   // Get total file chunks
-  var file_size = file_parameters[3];
+  var total_chunks = file_parameters[2];
+  // Get file size
+  var total_chunks = file_parameters[2];
+  // XHR2
+  var xhr = new XMLHttpRequest ();
 
-  // var filer = new Filer();
+  index = 1;
 
-  window.requestFileSystem = window.requestFileSystem ||
-                             window.webkitRequestFileSystem;
-  window.URL = window.URL || window.webkitURL;
+  // for (var index = 1; index <= 1; index++) {
+    document.getElementById ("status").innerHTML = index;
+    xhr.open ("POST", "php/download.php", false);
+    xhr.setRequestHeader ("X-File-Name", file_name);
+    xhr.setRequestHeader ("X-INDEX", index);
+    xhr.send ();
 
-  // openFS();
+    content = atob (xhr.responseText);
+    // console.log (">>>" + xhr.responseText);
+    var decrypted = asmCrypto.AES_CBC.decrypt (content, "passwordpassword");
 
-  create("test1.txt");
+    // var blob = new Blob ([decrypted], {type: "'" + xhr.getResponseHeader ('content-type') + "'"});
+    blob = new Blob ([decrypted]);
+
+    // Decrypted file_name
+    // var true_name = "aľščťžýáíé=aľščťžýáíé=aľščťžýáíé=aľščťžýáíé=aľščťžýáíé=aľščťžýáíé=aľščťžýáíé=.mp4";
+    var true_name = decodeURIComponent (file_name_dec);
+
+    window.requestFileSystem  = window.requestFileSystem || window.webkitRequestFileSystem;
+
+    window.requestFileSystem(window.TEMPORARY, 1024*1024*1024, onInitFs, errorHandler);
+    // window.requestFileSystem(window.TEMPORARY, 1024*1024*1024, function (filesystem) {fs = filesystem; onInitFs (fs);}, errorHandler);
+    // window.requestFileSystem (window.TEMPORARY, 0, listFs, errorHandler);
+    // window.requestFileSystem (window.TEMPORARY, 0, removeFs, errorHandler);
+    // rmFile();
 }
 
-// Nuke idb: /Users/{user}/Library/Application Support/Firefox/Profiles/i9soh8wz.default/indexedDB/
+function rmFile() {
+  window.requestFileSystem(window.TEMPORARY, 0, function(fs) {
+    fs.root.getFile('log.txt', {create: false}, function(fileEntry) {
 
-var openFSButton = document.querySelector('#openFSButton');
-var preview = document.querySelector('#preview');
-// var logger = new Logger('#log');
-var fs = null;
-var cwd = null;
-var html = [];
+      fileEntry.remove(function() {
+        console.log('File removed.');
+      }, errorHandler);
 
-function onError(e) {
-  console.log(e);
-  logger.log('Error ' + e.code + ' - ' + e.name);
+    }, errorHandler);
+  }, errorHandler);
 }
 
-function clearFS() {
-  console.log("piči");
-  fs.root.createReader().readEntries(function(results) {
-    [].forEach.call(results, function(entry) {
-      if (entry.isDirectory) {
-        entry.removeRecursively(function() {}, onError);
-      } else {
-        entry.remove(function() {}, onError);
-      }
-    });
-    getAllEntries(fs.root);
-  }, onError);
-
-  // idb.drop(function(e) {
-  //   logger.log('<p>Database deleted!</p>');
-  // }, onError);
+function toArray(list) {
+  return Array.prototype.slice.call(list || [], 0);
 }
 
-function openFS() {
-  window.requestFileSystem(TEMPORARY, 1024*1024, function(myFs) {
-    fs = myFs;
-    cwd = fs.root;
-    openFSButton.disabled = false;
-    logger.log('<p>Opened <em>' + fs.name, + '</em></p>');
-    getAllEntries(fs.root);
-  }, function(e) {
-    logger.log(e);
+function listResults(entries) {
+  // Document fragments can improve performance since they're only appended
+  // to the DOM once. Only one browser reflow occurs.
+  var fragment = document.createDocumentFragment();
+
+  entries.forEach(function(entry, i) {
+    var img = entry.isDirectory ? '<img src="folder-icon.gif">' :
+                                  '<img src="images/icons/file.png" height="16px">';
+    var li = document.createElement('li');
+    li.innerHTML = [img, '<span>', entry.name, '</span>'].join('');
+    fragment.appendChild(li);
   });
+
+  document.querySelector('#filelist').appendChild(fragment);
 }
 
-function writeFile(file, i) {
-  cwd.getFile(file.name, {create: true, exclusive: false}, function(fileEntry) {
+function listFs(fs) {
+
+  var dirReader = fs.root.createReader();
+  var entries = [];
+
+  // Call the reader.readEntries() until no more results are returned.
+  var readEntries = function() {
+     dirReader.readEntries (function(results) {
+      if (!results.length) {
+        listResults(entries.sort());
+      } else {
+        entries = entries.concat(toArray(results));
+        readEntries();
+      }
+    }, errorHandler);
+  };
+
+  readEntries(); // Start reading dirs.
+
+}
+
+function onInitFs(fs) {
+
+  fs.root.getFile('log.txt', {create: true}, function(fileEntry) {
+
+    // Create a FileWriter object for our FileEntry (log.txt).
     fileEntry.createWriter(function(fileWriter) {
-      fileWriter.onwritestart = function() {
-        console.log('WRITE START');
-      };
-      fileWriter.onwriteend = function() {
-        console.log('WRITE END');
-      };
-      fileWriter.write(file);
-    }, onError);
 
-    getAllEntries(cwd);
-  }, onError);
-}
-
-function getAllEntries(dirEntry) {
-  dirEntry.createReader().readEntries(function(results) {
-    html = [];
-    // var paths = results.map(function(el) { return el.fullPath.substring(1); });
-    // renderFromPathObj(buildFromPathList(paths));
-    // document.querySelector('#entries2').innerHTML = html.join('');
-
-    var frag = document.createDocumentFragment();
-    // Native readEntries() returns an EntryArray, which doesn't have forEach.
-    [].forEach.call(results, function(entry) {
-      var li = document.createElement('li');
-      li.dataset.type = entry.isFile ? 'file' : 'folder';
-
-      var deleteLink = document.createElement('a');
-      deleteLink.href = '';
-      deleteLink.innerHTML = '<img src="images/icons/delete.svg" alt="Delete this" title="Delete this">';
-      deleteLink.classList.add('delete');
-      deleteLink.onclick = function(e) {
-        e.preventDefault();
-
-        if (entry.isDirectory) {
-          entry.removeRecursively(function() {
-          logger.log('<p>Removed ' + entry.name + '</p>');
-          getAllEntries(window.cwd);
-        });
-        } else {
-          entry.remove(function() {
-          logger.log('<p>Removed ' + entry.name + '</p>');
-          getAllEntries(window.cwd);
-        });
-        }
-        return false;
+      fileWriter.onwriteend = function(e) {
+        console.log('Write completed.');
       };
 
-      var span = document.createElement('span');
-      span.appendChild(deleteLink);
+      fileWriter.onerror = function(e) {
+        console.log('Write failed: ' + e.toString());
+      };
 
-      if (entry.isFile) {
+      // Create a new Blob and write it to log.txt.
+      // var blob = new Blob(['Lorem Ipsum'], {type: 'text/plain'});
 
-        entry.file(function(f) {
+      fileWriter.write(blob);
 
-          var size = Math.round(f.size * 100 / (1024 * 1024)) / 100;
-          span.title = size + 'MB';
+    }, errorHandler);
 
-          if (size < 1) {
-            size = Math.round(f.size * 100 / 1024) / 100;
-            span.title = size + 'KB';
-          }
+  }, errorHandler);
 
-          span.title += ', last modified: ' +
-                        f.lastModifiedDate.toLocaleDateString();
-
-          if (f.type.match('audio/') || f.type.match('video/ogg')) {
-
-            var audio = new Audio();
-
-            if (audio.canPlayType(f.type)) {
-              audio.src = window.URL.createObjectURL(f);
-              //audio.type = f.type;
-              //audio.controls = true;
-              audio.onended = function(e) {
-                window.URL.revokeObjectURL(this.src);
-              };
-
-              var a = document.createElement('a');
-              a.href = '';
-              a.dataset.fullPath = entry.fullPath;
-              a.textContent = entry.fullPath;
-              a.appendChild(audio);
-              a.onclick = playPauseAudio;
-
-              span.appendChild(a);
-            } else {
-              span.appendChild(document.createTextNode(entry.fullPath + " (can't play)"));
-            }
-          } else {
-            var a = document.createElement('a');
-            a.href = '';
-            a.textContent = entry.fullPath;
-
-            a.onclick = function(e) {
-              e.preventDefault();
-
-              var iframe = preview.querySelector('iframe');
-              if (!iframe) {
-                iframe = document.createElement('iframe');
-              } else {
-                window.URL.revokeObjectURL(iframe.src);
-              }
-
-              preview.innerHTML = '';
-
-              if (this.classList.contains('active')) {
-                this.classList.remove('active');
-                return;
-              } else {
-                this.classList.add('active');
-              }
-
-              iframe.src = window.URL.createObjectURL(f);
-              preview.innerHTML = '';
-              preview.appendChild(iframe);
-
-              return false;
-            };
-
-            span.appendChild(a)
-          }
-
-          /*var img = document.createElement('img');
-          img.src = 'images/icons/file.png';
-          img.title = 'This item is a file';
-          img.alt = img.title;
-          span.appendChild(img);*/
-
-          li.appendChild(span);
-        }, onError);
-      } else {
-        var span2 = document.createElement('span');
-
-        var folderLink = document.createElement('a');
-        folderLink.textContent = entry.fullPath;
-        folderLink.href = '';
-        folderLink.onclick = function(e) {
-          e.preventDefault();
-          cwd.getDirectory(this.textContent, {}, function(dirEntry) {
-            window.cwd = dirEntry; // TODO: not sure why we need to use window.cwd here.
-            getAllEntries(dirEntry);
-          }, onError);
-          return false;
-        };
-
-        span2.appendChild(folderLink);
-        span.appendChild(span2);
-        span.classList.add('bold');
-        var img = document.createElement('img');
-        img.src = 'images/icons/folder.png';
-        img.alt = 'This item is a folder';
-        img.title = img.alt;
-        span.title = img.alt;
-        span.appendChild(img);
-
-        li.appendChild(span);
-      }
-      frag.appendChild(li);
-    });
-
-    var entries = document.querySelector('#entries');
-    entries.innerHTML = '<ul></ul>';
-    entries.appendChild(frag);
-
-  }, onError);
 }
 
-function create(el) {
-  console.log(el);
-  cwd.getFile(el.value, {create: true, exclusive: true}, function(fileEntry) {
-    logger.log('<p>Created empty file <em>' + fileEntry.fullPath, + '</em></p>');
-    getAllEntries(cwd);
-    el.value = '';
-  }, onError);
+function errorHandler(e) {
+  var msg = '';
+
+  switch (e.code) {
+    case FileError.QUOTA_EXCEEDED_ERR:
+      msg = 'QUOTA_EXCEEDED_ERR';
+      break;
+    case FileError.NOT_FOUND_ERR:
+      msg = 'NOT_FOUND_ERR';
+      break;
+    case FileError.SECURITY_ERR:
+      msg = 'SECURITY_ERR';
+      break;
+    case FileError.INVALID_MODIFICATION_ERR:
+      msg = 'INVALID_MODIFICATION_ERR';
+      break;
+    case FileError.INVALID_STATE_ERR:
+      msg = 'INVALID_STATE_ERR';
+      break;
+    default:
+      msg = 'Unknown Error';
+      break;
+  };
+
+  console.log('Error: ' + msg);
 }
-
-function mkdir(el) {
-  console.log(el);
-  cwd.getDirectory(el.value, {create: true, exclusive: true}, function(dirEntry) {
-    logger.log('<p>Created folder <em>' + dirEntry.fullPath, + '</em></p>');
-    getAllEntries(cwd);
-    el.value = '';
-  }, onError);
-}
-
-function buildFromPathList(paths) {
-  var tree = {};
-  for (var i = 0, path; path = paths[i]; ++i) {
-    var pathParts = path.split('/');
-    var subObj = tree;
-    for (var j = 0, folderName; folderName = pathParts[j]; ++j) {
-      if (!subObj[folderName]) {
-        subObj[folderName] = j < pathParts.length - 1 ? {} : null;
-      }
-      subObj = subObj[folderName];
-    }
-  }
-  return tree;
-}
-
-function renderFromPathObj(object) {
-  for (var folder in object) {
-    if (!object[folder]) { // file's will have a null value
-      html.push('<li>', folder, '</li>');
-    } else {
-      html.push('<li>', folder);
-      html.push('<ul>');
-      renderFromPathObj(object[folder]);
-      html.push('</ul>');
-    }
-  }
-}
-
-function playPauseAudio(e) {
-  var a = e.target;
-  var audio = a.querySelector('audio');
-  if (audio.paused) {
-    audio.play();
-    a.classList.add('active');
-  } else {
-    audio.pause();
-    a.classList.remove('active');
-  }
-  e.preventDefault();
-}
-
-window.addEventListener('DOMContentLoaded', function(e) {
-
-}, false);
-
-window.addEventListener('load', function(e) {
-  var dnd = new DnDFileController('body', function(files) {
-    [].forEach.call(files, writeFile);
-  });
-  openFS();
-}, false);

@@ -83,29 +83,29 @@ if ($index == "1") {
     file_put_contents ($path . '/' . 'name', $file_name);
     chmod ($path . "/"."name", 0777);
   }
-
   $target = $path . "/" . $index;
-
   // Get sended data
   $input = fopen ("php://input", "r");
   file_put_contents ($target, $input);
-
   chmod ($path . "/" . $index, 0777);
+  if ($chunks_total == 1) {
+    $file_time = time();
+    rename ($path, $path . ":" . $file_time);
+  }
   // Send
   echo $cur_name;
 }
 else {
   $target = $path . "/" . $index;
-
   // Get sended data
   $input = fopen ("php://input", "r");
   file_put_contents ($target, $input);
-
   chmod ($path . "/" . $index, 0777);
   if ($index == $chunks_total) {
     $file_time = time();
     rename ($path, $path . ":" . $file_time);
   }
+  // Send
   echo $cur_name;
 }
 ?>

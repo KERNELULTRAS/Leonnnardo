@@ -68,28 +68,6 @@ function upload_start () {
   upload_file ();
 }
 
-//#####################################################
-// ArrayBuffer to string
-//#####################################################
-function ab2s (buf) {
-  var view = new Uint8Array (buf);
-  return Array.prototype.map.call(view, function(charcode) {
-    return String.fromCharCode(charcode);
-  }).join('');
-}
-
-//#####################################################
-// String to ArrayBuffer
-//#####################################################
-function s2ab (str) {
-  var buf = new ArrayBuffer (str.length);
-  var bufView = new Uint8Array (buf);
-  for (var i=0, strLen=str.length; i<strLen; i++) {
-    bufView[i] = str.charCodeAt (i);
-  }
-  return buf;
-}
-
 //####################################################
 // Read files and write on server
 //####################################################
@@ -168,4 +146,26 @@ function upload_file () {
   // Display status reading
   document.getElementById ("status").innerHTML = "Reading " + index + "/" + chunks_total;
   worker_reader.postMessage (chunk);
+}
+
+//#####################################################
+// ArrayBuffer to string
+//#####################################################
+function ab2s (buf) {
+  var view = new Uint8Array (buf);
+  return Array.prototype.map.call(view, function(charcode) {
+    return String.fromCharCode(charcode);
+  }).join('');
+}
+
+//#####################################################
+// String to ArrayBuffer
+//#####################################################
+function s2ab (str) {
+  var buf = new ArrayBuffer (str.length);
+  var bufView = new Uint8Array (buf);
+  for (var i=0, strLen=str.length; i<strLen; i++) {
+    bufView[i] = str.charCodeAt (i);
+  }
+  return buf;
 }

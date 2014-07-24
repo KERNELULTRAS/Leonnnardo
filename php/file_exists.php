@@ -3,6 +3,7 @@
 // file_exists.php - check whether a file exists
 //
 // Part of projekt SLUT https://github.com/bedna-KU/Slut
+// Author: Mario Chorvath - Bedna
 //
 // Licence GNU General Public License
 // Version 3

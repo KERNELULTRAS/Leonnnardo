@@ -2,6 +2,7 @@
 // remove_file.js - remove file or directory
 //
 // Part of projekt SLUT https://github.com/bedna-KU/Slut
+// Author: Mario Chorvath - Bedna
 //
 // Licence GNU General Public License
 // Version 3

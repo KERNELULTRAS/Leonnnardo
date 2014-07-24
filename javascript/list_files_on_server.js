@@ -2,6 +2,7 @@
 // list_files_on_server.js - list files on server
 //
 // Part of projekt SLUT https://github.com/bedna-KU/Slut
+// Author: Mario Chorvath - Bedna
 //
 // Licence GNU General Public License
 // Version 3

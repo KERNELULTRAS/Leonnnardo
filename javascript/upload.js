@@ -2,11 +2,13 @@
 // upload.js - save encrypted chunks into directory
 //
 // Part of projekt SLUT https://github.com/bedna-KU/Slut
+// Author: Mario Chorvath - Bedna
 //
 // Licence GNU General Public License
 // Version 3
 // http://www.gnu.org/copyleft/gpl.html
 //#####################################################
+
 // Global variables
 const BYTES_PER_CHUNK = 512 * 1024; // Chunk sizes.
 
@@ -17,7 +19,6 @@ var index; // File index
 var browser; // Browser name
 var blob = new Blob ();
 var pseudo_name; // Numerical name on server
-var fs = null; // File system name
 
 //#####################################################
 // Start script after click on Send

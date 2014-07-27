@@ -19,6 +19,7 @@ var index; // File index
 var browser; // Browser name
 var blob = new Blob ();
 var pseudo_name; // Numerical name on server
+var pwd; // Working directory
 
 //#####################################################
 // Start script after click on Send
@@ -28,28 +29,33 @@ function upload () {
   var xhr_fe;
   var blob = document.getElementById ('fileToUpload').files[0];
 
-  // Detect browser
-  var str = "User-agent header: " + navigator.userAgent;
-  if (str.match (/firefox/i)) {
-    browser = "firefox";
-  }
-  else if (str.match (/chrome/i)) {
-    browser = "chrome";
-  }
-
-  // File exist?
-  xhr_fe = new XMLHttpRequest ();
-  xhr_fe.open ("POST", "php/file_exists.php", false);
-  var blob_name = encodeURIComponent (blob.name);
-  xhr_fe.setRequestHeader ("X-File-Name", blob_name);
-  xhr_fe.send ();
-
-  if (xhr_fe.responseText == "Uploading ...") {
-    document.getElementById ("status").innerHTML = xhr_fe.responseText;
-    upload_start ();
+  if (!blob) {
+    alert ("You must select a file");
   }
   else {
-    document.getElementById ("status").innerHTML = xhr_fe.responseText;
+    // Detect browser
+    var str = "User-agent header: " + navigator.userAgent;
+    if (str.match (/firefox/i)) {
+      browser = "firefox";
+    }
+    else if (str.match (/chrome/i)) {
+      browser = "chrome";
+    }
+
+    // File exist?
+    xhr_fe = new XMLHttpRequest ();
+    xhr_fe.open ("POST", "php/file_exists.php", false);
+    var blob_name = encodeURIComponent (blob.name);
+    xhr_fe.setRequestHeader ("X-File-Name", blob_name);
+    xhr_fe.send ();
+
+    if (xhr_fe.responseText == "Uploading ...") {
+      document.getElementById ("status").innerHTML = xhr_fe.responseText;
+      upload_start ();
+    }
+    else {
+      document.getElementById ("status").innerHTML = xhr_fe.responseText;
+    }
   }
 }
 
@@ -59,6 +65,7 @@ function upload () {
 function upload_start () {
 
   blob = document.getElementById ("fileToUpload").files[0];
+
   index = 0; // File index
   start = 0; // Start read blob
 
@@ -141,6 +148,7 @@ function upload_file () {
     else {
       worker_reader.terminate ();
       worker_uploader.terminate ();
+      document.getElementById ("status").innerHTML = "Upload finished";
       list_files_on_server ();
     }
   }

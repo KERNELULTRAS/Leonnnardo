@@ -18,13 +18,9 @@ function remove_file (file_name) {
     xhr.setRequestHeader ("X-File-Name", file_name);
     xhr.send ();
 
+    document.getElementById ("status").innerHTML = "Deleted";
+
     list_files_on_server ();
     // content = atob (xhr.responseText);
-  }
-}
-
-function delete_confirm () {
-  if (confirm ("Press a button!") == true) {
-    ;
   }
 }

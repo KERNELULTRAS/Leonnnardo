@@ -7,6 +7,8 @@
     <script type="text/javascript" src="javascript/remove_file.js"></script>
     <script type="text/javascript" src="javascript/list_files_on_server.js"></script>
     <script type="text/javascript" src="javascript/asmcrypto.js"></script>
+    <script type="text/javascript" src="javascript/mkdir_on_server.js"></script>
+    <script type="text/javascript" src="javascript/cd.js"></script>
     <script type="text/javascript" src="javascript/filesaver.js"></script>
     <link rel="stylesheet" type="text/css" href="css/classic.css">
   </head>
@@ -14,16 +16,19 @@
     <div class="head">
       <strong>SLUT</strong><span class="slogan">best server for your security</span>
     </div>
+    <div class="status_bar">
+      <span>Status: </span><span id="status"></span>
+    </div>
     <div class="upload">
       <h1>Upload</h1>
       <input type="file" name="file" id="fileToUpload"> <button onclick="upload()">Send</button>
       <progress id="progressBar" value="0" max="100"></progress><span id="percent"></span>
-      <p><span id="status"></span></p>
       <ul id="filelist"></ul>
     </div>
     <div class="download">
       <h1>Download</h1>
       <button onclick="list_files_on_server()">Refresh</button>
+      <input type="text" id="dir_name"> <button onclick="mkdir_on_server(getElementById('dir_name').value)">Make directory</button>
       <p id="files"></p>
     </div>
   </body>

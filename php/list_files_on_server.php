@@ -11,7 +11,7 @@
 //#####################################################
 $dir_array = scandir ("../uploads");
 $dir_array_named = [];
-foreach($dir_array as $child) {
+foreach ($dir_array as $child) {
   $file_name = file_get_contents ("../uploads/" . $child . "/". "name");
   $dir_array_named[$child] = $file_name;
 }

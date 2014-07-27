@@ -15,6 +15,8 @@ The project aim to upload/download multiple files and encrypt them on the client
 * Hudge (GB) file upload (split to chunks)
 * Encrypt content in browser (AES CBC)
 * Encrypt file name in browser (AES CBC)
+* Huge file download
+* Decrypt file name and content
 * Remove file
 * Progress bar
 * Fast
@@ -22,8 +24,7 @@ The project aim to upload/download multiple files and encrypt them on the client
 * Wokers (working on background)
 
 ### Todo:
-* Download
-* AES dencryption on client side and download
+* Multi user accounts
 * Multiple files upload/dowload
 * Optimize code
 

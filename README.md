@@ -29,7 +29,7 @@ Currently in the development stage.
 * Multi user accounts
 * Multiple files upload/dowload
 * Optimize code
-* Secutity
+* Security
 * Handle errors
 
 ### Licence:

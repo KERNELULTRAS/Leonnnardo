@@ -3,6 +3,8 @@ Slut
 
 The project aim to upload/download multiple files and encrypt them on the client side.
 
+Currently in the development stage.
+
 ### Technologies:
 * HTML5
 * JavaScript
@@ -27,6 +29,8 @@ The project aim to upload/download multiple files and encrypt them on the client
 * Multi user accounts
 * Multiple files upload/dowload
 * Optimize code
+* Secutity
+* Handle errors
 
 ### Licence:
 [GNU GPLv3](http://www.gnu.org/licenses/gpl-3.0.html)

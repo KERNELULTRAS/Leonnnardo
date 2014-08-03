@@ -20,7 +20,7 @@ function list_files_on_server () {
   var obj_files = JSON.parse (json_data_files);
   var files = "";
   files = '<table>';
-  files += '<tr class = "files"><td>File name</td><td>File size</td><td>Time created</td><td>Delete</td></tr>';
+  files += '<tr><td>File name</td><td>File size</td><td>Time created</td><td></td></tr>';
   // Print files
   for (var index in obj_files) {
     if (index.substring(0, 1) != ".") {

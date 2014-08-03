@@ -9,6 +9,7 @@
     <script type="text/javascript" src="javascript/asmcrypto.js"></script>
     <script type="text/javascript" src="javascript/mkdir_on_server.js"></script>
     <script type="text/javascript" src="javascript/cd.js"></script>
+    <script type="text/javascript" src="javascript/idb.filesystem.js"></script>
     <script type="text/javascript" src="javascript/filesaver.js"></script>
     <link rel="stylesheet" type="text/css" href="css/classic.css">
   </head>
@@ -27,6 +28,7 @@
     </div>
     <div class="download">
       <h1>Download</h1>
+      <a id="download_link" download>Download</a>
       <button onclick="list_files_on_server()">Refresh</button>
       <input type="text" id="dir_name"> <button onclick="mkdir_on_server(getElementById('dir_name').value)">Make directory</button>
       <p id="files"></p>

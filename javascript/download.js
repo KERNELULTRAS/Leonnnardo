@@ -24,7 +24,7 @@ function download (file_name, file_name_dec) {
   window.requestFileSystem  = window.requestFileSystem || window.webkitRequestFileSystem;
 
   document.getElementById ("status").innerHTML = "Creating temporrary space";
-  window.requestFileSystem(window.TEMPORARY, 1024*1024*1024, function (filesystem) {var fs = filesystem; isFileInFS (fs, file_name, file_name_dec, chunks_total, index);}, errorHandler);
+  window.requestFileSystem (window.TEMPORARY, file_size, function (filesystem) {var fs = filesystem; isFileInFS (fs, file_name, file_name_dec, chunks_total, index);}, errorHandler);
 }
 
 // As exists previous file
@@ -37,11 +37,9 @@ function isFileInFS(fs, file_name, file_name_dec, chunks_total, index) {
   var readEntries = function() {
      dirReader.readEntries (function(results) {
       if (!results.length) {
-        console.log ("XXX");
         document.getElementById ("status").innerHTML = "Reading from server";
         readServerFile(fs, file_name, file_name_dec, chunks_total, index);
       } else {
-        console.log ("YYY");
         document.getElementById ("status").innerHTML = "Removing previous temporrary file";
         rmFileFS(fs, file_name, file_name_dec, chunks_total, index);
       }
@@ -52,59 +50,66 @@ function isFileInFS(fs, file_name, file_name_dec, chunks_total, index) {
 
 // Remove file
 function rmFileFS (fs, file_name, file_name_dec, chunks_total, index) {
-  window.requestFileSystem (window.TEMPORARY, 0, function (fs) {
-    fs.root.getFile ('log.txt', {create: false}, function (fileEntry) {
-      fileEntry.remove (function() {
-        console.log ('File removed.');
-        // window.requestFileSystem(window.TEMPORARY, 1024*1024*1024, readServerFile, errorHandler);
-        // window.requestFileSystem(window.TEMPORARY, 1024*1024*1024, function (filesystem) {var fs = filesystem; isFileInFS (fs, file_name, file_name_dec);}, errorHandler);
-        document.getElementById ("status").innerHTML = "Reading file from server";
-        readServerFile(fs, file_name, file_name_dec, chunks_total, index);
-      }, errorHandler);
+    var dirReader = fs.root.createReader();
+    dirReader.readEntries(function(entries) {
+      for (var i = 0, entry; entry = entries[i]; ++i) {
+        if (entry.isDirectory) {
+          entry.removeRecursively(function() {}, errorHandler);
+        } else {
+          entry.remove(function() {}, errorHandler);
+        }
+      }
+      filelist.innerHTML = 'Directory emptied.';
+      document.getElementById ("status").innerHTML = "Reading file from server " + index + "/" + chunks_total;
+      readServerFile(fs, file_name, file_name_dec, chunks_total, index);
     }, errorHandler);
-  }, errorHandler);
 }
+
+
 
 // Read file (chunk) on server
 function readServerFile(fs, file_name, file_name_dec, chunks_total, index) {
-  console.log ("FILE NAME: " + file_name);
-  document.getElementById ("status").innerHTML = index;
   // New XHR2
   var xhr = new XMLHttpRequest ();
   xhr.open ("POST", "php/download.php", false);
   xhr.setRequestHeader ("X-File-Name", file_name);
+
   xhr.setRequestHeader ("X-INDEX", index);
   xhr.send ();
 
   content = atob (xhr.responseText);
-  console.log (">>>");
   var decrypted = asmCrypto.AES_CBC.decrypt (content, "passwordpassword");
   // var blob = new Blob ([decrypted], {type: "'" + xhr.getResponseHeader ('content-type') + "'"});
   var blob = new Blob ([decrypted]);
   // Decrypted file_name
   // var true_name = "aľščťžýáíé=aľščťžýáíé=aľščťžýáíé=aľščťžýáíé=aľščťžýáíé=aľščťžýáíé=aľščťžýáíé=.mp4";
   // var true_name = decodeURIComponent (file_name_dec);
-  document.getElementById ("status").innerHTML = "Writing file to temporrary space";
+  document.getElementById ("status").innerHTML = "Writing file to temporrary space " + index + "/" + chunks_total;
   writeFs(fs, file_name, file_name_dec, chunks_total, index, blob);
 }
 
 // Write file on local FileSystem
 function writeFs(fs, file_name, file_name_dec, chunks_total, index, blob) {
 
-  fs.root.getFile('log.txt', {create: true}, function(fileEntry) {
+  fs.root.getFile(file_name_dec, {create: true}, function(fileEntry) {
 
     // Create a FileWriter object for our FileEntry (log.txt).
     fileEntry.createWriter(function(fileWriter) {
       fileWriter.seek(fileWriter.length);
       fileWriter.onwriteend = function(e) {
-        console.log('Write completed.');
+        // If download all chunks make link to save file
         if (index >= chunks_total) {
           document.getElementById ("status").innerHTML = "File successfully downloaded";
+          // Link to temporrary local storage
+          // download_link.href = fileEntry.toURL();
+          download_link.download = file_name_dec;
+          download_link.href = toURL(fileEntry);
           return;
         }
+        // Download next chunk
         else {
           index++;
-          document.getElementById ("status").innerHTML = "Reading from server";
+          document.getElementById ("status").innerHTML = "Reading file from server " + index + "/" + chunks_total;
           readServerFile(fs, file_name, file_name_dec, chunks_total, index);
           // PUSSY PLS WRT APPEND
         }
@@ -123,4 +128,16 @@ function writeFs(fs, file_name, file_name_dec, chunks_total, index, blob) {
 function errorHandler(e) {
   var msg = '';
   console.log (e.name);
+}
+
+function toURL(entry) {
+  // Can't polyfill opening filesystem: URLs, so create a blob: URL instead.
+  // TODO(ericbidelman): cleanup URLs created using revokeObjectUR().
+  if (entry.isFile && entry.file_.blob_) {
+    var blob = entry.file_.blob_;
+  } else {
+    var blob = new Blob([]);
+  }
+
+  return window.URL.createObjectURL(blob);
 }

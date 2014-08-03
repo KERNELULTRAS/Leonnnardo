@@ -21,9 +21,9 @@ $index        = $_SERVER['HTTP_X_INDEX']; // Index of chunk
 $chunks_total = $_SERVER['HTTP_X_CHUNKS_TOTAL']; // Total of chunks
 
 // If directory don't exist create him
-if (!is_dir(upload)) {
-  mkdir("upload");
-  chmod("upload", 0777);
+if (!is_dir("../uploads/")) {
+  mkdir("../uploads/");
+  chmod("../uploads/", 0777);
 }
 
 // file_put_contents ("log" . $index, $cur_name);
@@ -72,12 +72,13 @@ if (!preg_match ('/^[0-9]+$/', $chunks_total)) {
   echo 'ERROR: Chunks total must be number';
 }
 
-// Set path
-$path = "../uploads/file:" . $cur_name . ":" . $chunks_total . ":" . $file_size;
-
 // If file exist on server dont upload it
 if ($index == "1") {
-  $cur_name = get_name(); // Get fist free number as file name
+  // Get first free number as file name
+  $cur_name = get_name();
+  // Set path
+  $path = "../uploads/file:" . $cur_name . ":" . $chunks_total . ":" . $file_size;
+  file_put_contents (log, $cur_name);
   if (!file_exists ($path)) {
     mkdir ($path);
     chmod ($path, 0777);
@@ -97,6 +98,8 @@ if ($index == "1") {
   echo $cur_name;
 }
 else {
+  // Set path
+  $path = "../uploads/file:" . $cur_name . ":" . $chunks_total . ":" . $file_size;
   $target = $path . "/" . $index;
   // Get sended data
   $input = fopen ("php://input", "r");

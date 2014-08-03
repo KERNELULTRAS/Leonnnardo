@@ -38,8 +38,6 @@ if (file_exists ("../uploads/" . $file_name)) {
   fclose ($handle);
   $file_size = strlen ($atachment);
 
-file_put_contents ("log", $file_name);
-
   // Send header
   header ('Content-Description: File Transfer');
   header ('Pragma: public'); 	// required

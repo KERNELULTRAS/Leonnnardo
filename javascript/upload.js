@@ -20,6 +20,7 @@ var browser; // Browser name
 var blob = new Blob ();
 var pseudo_name; // Numerical name on server
 var pwd; // Working directory
+var user_id = "luzer"; // User ID
 
 //#####################################################
 // Start script after click on Send
@@ -137,6 +138,7 @@ function upload_file () {
       // Workaround for FireFox and Chrome
       // Firefox without worker.terminate eats memory
       // Chrome with worker.terminate freezes
+      console.log (index);
       if (browser == "firefox") {
         worker_uploader.terminate ();
         return upload_file ();

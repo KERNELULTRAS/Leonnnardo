@@ -9,11 +9,13 @@
 // Version 3
 // http://www.gnu.org/copyleft/gpl.html
 //#####################################################
+
 $dir_array = scandir ("../uploads");
-$dir_array_named = [];
 foreach ($dir_array as $child) {
-  $file_name = file_get_contents ("../uploads/" . $child . "/". "name");
-  $dir_array_named[$child] = $file_name;
+  if (substr ($child, 0, 1) != ".") {
+    $file_name = file_get_contents ("../uploads/" . $child . "/". "name");
+    $dir_array_named[$child] = $file_name;
+  }
 }
 echo json_encode ($dir_array_named);
 ?>

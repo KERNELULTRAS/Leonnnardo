@@ -1,7 +1,7 @@
 a:link {
 	color: #000000;
 	background-color: #FFFFFF;
-	font-style: oblique;
+	font-style: normal;
 	font-weight: normal;
 	text-decoration: none;
 	border: 0;
@@ -10,16 +10,16 @@ a:link {
 a:visited {
 	color: #000000;
 	background-color: #FFFFFF;
-	font-style: oblique;
+	font-style: normal;
 	font-weight: normal;
 	text-decoration: none;
 	border: 0;
 }
 
 a:hover {
-	color: #0000FF;
+	color: #007700;
 	background-color: #FFFFFF;
-	font-style: oblique;
+	font-style: normal;
 	font-weight: normal;
 	border: 0;
 }
@@ -27,7 +27,7 @@ a:hover {
 a:active {
 	color: #000000;
 	background-color: #FFFFFF;
-	font-style: oblique;
+	font-style: normal;
 	font-weight: normal;
 	text-decoration: none;
 	border: 0;
@@ -98,14 +98,18 @@ strong {
 	margin: 0 0 0 0;
 }
 
-.upload {
+.upload_container {
   color: #000000;
   background-color: #FFFFFF;
 	width: 40%;
 	float: left;
 	margin: 1% 0 0 1%;
-	padding: 1% 0 0 2%;
+	padding: 1% 0 1% 2%;
   /* border: 5px solid red; */
+}
+
+.icon_OK {
+  height: 16px;
 }
 
 .download {
@@ -115,6 +119,15 @@ strong {
 	float: left;
 	margin: 1% 0 0 1%;
 	padding: 1% 0 0 2%;
+}
+
+#download_link {
+  font-weight: bold;
+}
+
+.download_container {
+  margin: 0 0 0 0;
+  padding: 1% 0 0 0;
 }
 
 .slogan {
@@ -157,13 +170,13 @@ td {
 	border: 0;
 }
 
-#progressBar::-moz-progress-bar {
+#progress_bar::-moz-progress-bar {
   width: 20px;
   background: url('progress.png');
   margin: 0;
 }
 
-#progressBar::-webkit-progress-bar {
+#progress_bar::-webkit-progress-bar {
   width: 20px;
   background: url('progress.png');
   margin: 0;

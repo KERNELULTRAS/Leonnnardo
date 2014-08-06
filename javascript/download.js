@@ -59,7 +59,6 @@ function rmFileFS (fs, file_name, file_name_dec, chunks_total, index) {
           entry.remove(function() {}, errorHandler);
         }
       }
-      filelist.innerHTML = 'Directory emptied.';
       document.getElementById ("status").innerHTML = "Reading file from server " + index + "/" + chunks_total;
       readServerFile(fs, file_name, file_name_dec, chunks_total, index);
     }, errorHandler);
@@ -69,28 +68,38 @@ function rmFileFS (fs, file_name, file_name_dec, chunks_total, index) {
 
 // Read file (chunk) on server
 function readServerFile(fs, file_name, file_name_dec, chunks_total, index) {
+  document.getElementById ("status").innerHTML = "Reading file from server " + index + "/" + chunks_total;
+  var d1 = new Date();
+  var n1 = d1.getTime();
   // New XHR2
   var xhr = new XMLHttpRequest ();
   xhr.open ("POST", "php/download.php", false);
-  xhr.setRequestHeader ("X-File-Name", file_name);
+  xhr.setRequestHeader ("X-FILE-NAME", file_name);
 
   xhr.setRequestHeader ("X-INDEX", index);
   xhr.send ();
 
   content = atob (xhr.responseText);
+  // Decrypt content
+  document.getElementById ("status").innerHTML = "Decrypting file " + index + "/" + chunks_total;
   var decrypted = asmCrypto.AES_CBC.decrypt (content, "passwordpassword");
   // var blob = new Blob ([decrypted], {type: "'" + xhr.getResponseHeader ('content-type') + "'"});
   var blob = new Blob ([decrypted]);
   // Decrypted file_name
   // var true_name = "aľščťžýáíé=aľščťžýáíé=aľščťžýáíé=aľščťžýáíé=aľščťžýáíé=aľščťžýáíé=aľščťžýáíé=.mp4";
   // var true_name = decodeURIComponent (file_name_dec);
-  document.getElementById ("status").innerHTML = "Writing file to temporrary space " + index + "/" + chunks_total;
+  var d2 = new Date();
+  var n2 = d2.getTime();
+  var v = n2 -n1;
+  console.log ("Reading: " + v.toString());
   writeFs(fs, file_name, file_name_dec, chunks_total, index, blob);
 }
 
 // Write file on local FileSystem
 function writeFs(fs, file_name, file_name_dec, chunks_total, index, blob) {
-
+  document.getElementById ("status").innerHTML = "Writing file to temporrary space " + index + "/" + chunks_total;
+  var d1 = new Date();
+  var n1 = d1.getTime();
   fs.root.getFile(file_name_dec, {create: true}, function(fileEntry) {
 
     // Create a FileWriter object for our FileEntry (log.txt).
@@ -102,14 +111,19 @@ function writeFs(fs, file_name, file_name_dec, chunks_total, index, blob) {
           document.getElementById ("status").innerHTML = "File successfully downloaded";
           // Link to temporrary local storage
           // download_link.href = fileEntry.toURL();
-          download_link.download = file_name_dec;
-          download_link.href = toURL(fileEntry);
+          download_link.download = decodeURIComponent (file_name_dec);
+          download_link.href = toURL (fileEntry);
+          // Download link (after click on link, link removed)
+          download_link.innerHTML = '<span  onclick="this.innerHTML=' + "''" + '"><img class = "icon" src="images/icons/down_arrow.gif">' + decodeURIComponent (file_name_dec) + '<span>';
           return;
         }
         // Download next chunk
         else {
           index++;
-          document.getElementById ("status").innerHTML = "Reading file from server " + index + "/" + chunks_total;
+          var d2 = new Date();
+          var n2 = d2.getTime();
+          var v = n2 -n1;
+          console.log ("Writing: " + v.toString());
           readServerFile(fs, file_name, file_name_dec, chunks_total, index);
           // PUSSY PLS WRT APPEND
         }

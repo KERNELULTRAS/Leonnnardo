@@ -34,20 +34,11 @@ function upload () {
     alert ("You must select a file");
   }
   else {
-    // Detect browser
-    var str = "User-agent header: " + navigator.userAgent;
-    if (str.match (/firefox/i)) {
-      browser = "firefox";
-    }
-    else if (str.match (/chrome/i)) {
-      browser = "chrome";
-    }
-
     // File exist?
     xhr_fe = new XMLHttpRequest ();
     xhr_fe.open ("POST", "php/file_exists.php", false);
     var blob_name = encodeURIComponent (blob.name);
-    xhr_fe.setRequestHeader ("X-File-Name", blob_name);
+    xhr_fe.setRequestHeader ("X-FILE-NAME", blob_name);
     xhr_fe.send ();
 
     if (xhr_fe.responseText == "Uploading ...") {
@@ -64,6 +55,9 @@ function upload () {
 // Calculates chunks
 //####################################################
 function upload_start () {
+
+  // Show progress bar
+  upload_status.innerHTML = '<progress id = "progress_bar" value = "0" max = "100"></progress>';
 
   blob = document.getElementById ("fileToUpload").files[0];
 
@@ -83,6 +77,9 @@ function upload_start () {
 function upload_file () {
 // Upload chunks and adjustes progress bars
 
+  // Define progressbar and percentage
+  var percentageDiv = document.getElementById ("percent");
+  var progress_bar = document.getElementById ("progress_bar");
   // Define workers
   var worker_reader = new Worker ('javascript/worker_reader.js');
   var worker_uploader = new Worker ('javascript/worker_uploader.js');
@@ -126,11 +123,9 @@ function upload_file () {
       chunk = blob.slice (start, end);
 
       // Progress bar
-      var percentageDiv = document.getElementById ("percent");
-      var progressBar = document.getElementById ("progressBar");
       percentageDiv.innerHTML = "0%";
-      progressBar.max = chunks_total;
-      progressBar.value = index;
+      progress_bar.max = chunks_total;
+      progress_bar.value = index;
       percentageDiv.innerHTML = Math.round (index/chunks_total * 100) + "%";
 
       // Display status Reading
@@ -150,7 +145,10 @@ function upload_file () {
     else {
       worker_reader.terminate ();
       worker_uploader.terminate ();
+      progress_bar.value = 100;
+      percentageDiv.innerHTML = 100 + "%";
       document.getElementById ("status").innerHTML = "Upload finished";
+      upload_status.innerHTML = '<img class = "icon_OK" src="images/icons/download_OK.png">';
       list_files_on_server ();
     }
   }

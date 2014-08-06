@@ -18,6 +18,7 @@ function list_files_on_server () {
   var json_data_files = (xhr.responseText);
   // Parse to diles to array
   var obj_files = JSON.parse (json_data_files);
+  console.log (obj_files);
   var files = "";
   files = '<table>';
   files += '<tr><td>File name</td><td>File size</td><td>Time created</td><td></td></tr>';

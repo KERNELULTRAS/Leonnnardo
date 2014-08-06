@@ -2,6 +2,7 @@
 <html>
   <head>
     <meta charset="UTF-8">
+    <script type="text/javascript" src="javascript/start.js"></script>
     <script type="text/javascript" src="javascript/upload.js"></script>
     <script type="text/javascript" src="javascript/download.js"></script>
     <script type="text/javascript" src="javascript/remove_file.js"></script>
@@ -13,25 +14,24 @@
     <script type="text/javascript" src="javascript/filesaver.js"></script>
     <link rel="stylesheet" type="text/css" href="css/classic.css">
   </head>
-  <body onload="list_files_on_server()">
-    <div class="head">
+  <body onload = "start()">
+    <div class = "head">
       <strong>SLUT</strong><span class="slogan">best server for your security</span>
     </div>
-    <div class="status_bar">
+    <div class = "status_bar">
       <span>Status: </span><span id="status"></span>
     </div>
-    <div class="upload">
+    <div class = "upload_container">
       <h1>Upload</h1>
-      <input type="file" name="file" id="fileToUpload"> <button onclick="upload()">Send</button>
-      <progress id="progressBar" value="0" max="100"></progress><span id="percent"></span>
-      <ul id="filelist"></ul>
+      <input type = "file" name = "file" id = "fileToUpload"> <button onclick = "upload()">Send</button>
+      <span id = "upload_status"><progress id = "progress_bar" value = "0" max = "100"></progress></span><span id = "percent"></span>
     </div>
-    <div class="download">
+    <div class = "download">
       <h1>Download</h1>
-      <a id="download_link" download>Download</a>
       <button onclick="list_files_on_server()">Refresh</button>
-      <input type="text" id="dir_name"> <button onclick="mkdir_on_server(getElementById('dir_name').value)">Make directory</button>
-      <p id="files"></p>
+      <input type = "text" id = "dir_name"> <button onclick = "mkdir_on_server(getElementById('dir_name').value)">Make directory</button>
+      <p class = "download_container"><a id = "download_link" download></a></p>
+      <p id = "files"></p>
     </div>
   </body>
 <html>

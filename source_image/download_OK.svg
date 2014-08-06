@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   id="svg2"
+   sodipodi:docname="download_OK.svg"
+   viewBox="0 0 317.13 352.75"
+   version="1.1"
+   inkscape:version="0.48.4 r9939"
+   width="100%"
+   height="100%">
+  <defs
+     id="defs4">
+    <linearGradient
+       id="linearGradient3768"
+       inkscape:collect="always">
+      <stop
+         id="stop3770"
+         style="stop-color:#ffffff"
+         offset="0" />
+      <stop
+         id="stop3772"
+         style="stop-color:#ffffff;stop-opacity:0"
+         offset="1" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient3774"
+       y2="222.02"
+       xlink:href="#linearGradient3768"
+       gradientUnits="userSpaceOnUse"
+       x2="310.12"
+       gradientTransform="translate(-38.09 54.252)"
+       y1="124.03"
+       x1="324.26"
+       inkscape:collect="always" />
+    <linearGradient
+       id="linearGradient3778"
+       y2="184.9"
+       xlink:href="#linearGradient3768"
+       gradientUnits="userSpaceOnUse"
+       x2="300.12"
+       gradientTransform="matrix(.50029 0 0 .50029 125.75 115.32)"
+       y1="124.03"
+       x1="324.26"
+       inkscape:collect="always" />
+    <linearGradient
+       id="linearGradient3791"
+       y2="209.51"
+       gradientUnits="userSpaceOnUse"
+       x2="325"
+       gradientTransform="matrix(.95277 0 0 .95277 -23.109 66.54)"
+       y1="390.22"
+       x1="301.43"
+       inkscape:collect="always">
+      <stop
+         id="stop3787"
+         style="stop-color:#ffffff"
+         offset="0" />
+      <stop
+         id="stop3789"
+         style="stop-color:#ffffff;stop-opacity:0"
+         offset="1" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient3799"
+       y2="177.36"
+       gradientUnits="userSpaceOnUse"
+       x2="232.14"
+       gradientTransform="translate(-37.376 53.538)"
+       y1="299.51"
+       x1="296.43"
+       inkscape:collect="always">
+      <stop
+         id="stop3795"
+         style="stop-color:#ff0000"
+         offset="0" />
+      <stop
+         id="stop3797"
+         style="stop-color:#ff0000;stop-opacity:0"
+         offset="1" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient3807"
+       y2="371.65"
+       gradientUnits="userSpaceOnUse"
+       x2="360.71"
+       gradientTransform="translate(2.019949404022419,44.95170333502078)"
+       y1="195.93"
+       x1="395"
+       inkscape:collect="always">
+      <stop
+         id="stop3803"
+         style="stop-color:#aa0000"
+         offset="0" />
+      <stop
+         id="stop3805"
+         style="stop-color:#550000"
+         offset="1" />
+    </linearGradient>
+    <filter
+       id="filter3865"
+       height="1.5"
+       width="1.5"
+       color-interpolation-filters="sRGB"
+       y="-.25"
+       x="-.25"
+       inkscape:label="Drop shadow">
+      <feGaussianBlur
+         id="feGaussianBlur3867"
+         result="blur"
+         stdDeviation="10"
+         in="SourceAlpha" />
+      <feColorMatrix
+         id="feColorMatrix3869"
+         values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 1 0 "
+         type="matrix"
+         result="bluralpha" />
+      <feOffset
+         id="feOffset3871"
+         result="offsetBlur"
+         dy="0"
+         dx="0"
+         in="bluralpha" />
+      <feMerge
+         id="feMerge3873">
+        <feMergeNode
+           id="feMergeNode3875"
+           in="offsetBlur" />
+        <feMergeNode
+           id="feMergeNode3877"
+           in="SourceGraphic" />
+      </feMerge>
+    </filter>
+    <linearGradient
+       id="linearGradient3924"
+       y2="324.04"
+       gradientUnits="userSpaceOnUse"
+       x2="328.3"
+       gradientTransform="matrix(1.0096,0,0,1.0096,-49.788,38.877)"
+       y1="142.21"
+       x1="344.46"
+       inkscape:collect="always">
+      <stop
+         id="stop3920"
+         style="stop-color:#00ff00"
+         offset="0" />
+      <stop
+         id="stop3922"
+         style="stop-color:#008000"
+         offset="1" />
+    </linearGradient>
+    <filter
+       id="filter3940"
+       height="1.5"
+       width="1.5"
+       color-interpolation-filters="sRGB"
+       y="-.25"
+       x="-.25"
+       inkscape:label="Drop shadow">
+      <feGaussianBlur
+         id="feGaussianBlur3942"
+         result="blur"
+         stdDeviation="7"
+         in="SourceAlpha" />
+      <feColorMatrix
+         id="feColorMatrix3944"
+         values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 1 0 "
+         type="matrix"
+         result="bluralpha" />
+      <feOffset
+         id="feOffset3946"
+         result="offsetBlur"
+         dy="0"
+         dx="0"
+         in="bluralpha" />
+      <feMerge
+         id="feMerge3948">
+        <feMergeNode
+           id="feMergeNode3950"
+           in="offsetBlur" />
+        <feMergeNode
+           id="feMergeNode3952"
+           in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     bordercolor="#666666"
+     inkscape:pageshadow="2"
+     inkscape:window-y="20"
+     fit-margin-left="0"
+     pagecolor="#ffffff"
+     inkscape:window-height="1129"
+     inkscape:window-maximized="1"
+     inkscape:zoom="1.399999994452982"
+     inkscape:window-x="-3"
+     showgrid="false"
+     borderopacity="1.0"
+     inkscape:current-layer="layer1"
+     inkscape:cx="287.9458228205485"
+     inkscape:cy="178.3892679678166"
+     fit-margin-top="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     inkscape:window-width="1600"
+     inkscape:pageopacity="0.0"
+     inkscape:document-units="px" />
+  <g
+     id="layer1"
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     transform="translate(-103.53 -119.18)">
+    <path
+       id="rect3912"
+       sodipodi:nodetypes="czczczczc"
+       style="fill:url(#linearGradient3924);filter:url(#filter3940)"
+       inkscape:connector-curvature="0"
+       d="m 258.61,313.26 c 0,0 -12.773,-11.173 -34.38,-20.648 -21.607,-9.4754 -42.126,-12.902 -42.126,-12.902 0,0 25.615,17.148 48.548,44.718 22.933,27.57 36.155,57.112 36.155,57.112 0,0 20.097,-59.707 44.58,-106.86 24.483,-47.153 61.621,-89.044 61.621,-89.044 0,0 -41.079,26.703 -70.367,61.876 -29.289,35.174 -44.031,65.7500000000001 -44.031,65.7500000000001 z"
+       inkscape:export-filename="/var/www/html/Slut/images/icons/download_OK.png"
+       inkscape:export-xdpi="14.70107841491699"
+       inkscape:export-ydpi="14.70107841491699"
+       transform="matrix(1.718386506758573,0,0,1,-209.3924853095039,9.285714322505725)" />
+  </g>
+  <metadata
+     id="metadata44">
+    <rdf:RDF>
+      <cc:Work>
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <cc:license
+           rdf:resource="http://creativecommons.org/licenses/publicdomain/" />
+        <dc:publisher>
+          <cc:Agent
+             rdf:about="http://openclipart.org/">
+            <dc:title>Openclipart</dc:title>
+          </cc:Agent>
+        </dc:publisher>
+        <dc:title>Security OK</dc:title>
+        <dc:date>2012-06-10T04:34:49</dc:date>
+        <dc:description>security icon</dc:description>
+        <dc:source>https://openclipart.org/detail/170522/security-ok-by-diamonjohn-170522</dc:source>
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>diamonjohn</dc:title>
+          </cc:Agent>
+        </dc:creator>
+        <dc:subject>
+          <rdf:Bag>
+            <rdf:li>antivirus</rdf:li>
+            <rdf:li>firewall</rdf:li>
+            <rdf:li>hack</rdf:li>
+            <rdf:li>ok</rdf:li>
+            <rdf:li>protect</rdf:li>
+            <rdf:li>security</rdf:li>
+            <rdf:li>security ok</rdf:li>
+            <rdf:li>shield</rdf:li>
+            <rdf:li>system</rdf:li>
+          </rdf:Bag>
+        </dc:subject>
+      </cc:Work>
+      <cc:License
+         rdf:about="http://creativecommons.org/licenses/publicdomain/">
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Reproduction" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Distribution" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#DerivativeWorks" />
+      </cc:License>
+    </rdf:RDF>
+  </metadata>
+</svg>

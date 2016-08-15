@@ -15,7 +15,7 @@ const BYTES_PER_CHUNK = 512 * 1024; // Chunk sizes.
 var chunks_total; // Total chunks
 var start; // Start read blob
 var end; // End read blob
-var index; // File index
+// var index; // File index
 var browser; // Browser name
 var blob = new Blob ();
 var pseudo_name; // Numerical name on server
@@ -61,20 +61,20 @@ function upload_start () {
 
   blob = document.getElementById ("fileToUpload").files[0];
 
-  index = 0; // File index
+  var index = 0; // File index
   start = 0; // Start read blob
 
   chunks_total = Math.ceil (blob.size / BYTES_PER_CHUNK); // Calculate the number of chunks
   end = BYTES_PER_CHUNK;
   chunk = blob.slice (start, end); // Slice file to small chunk
   index++; // First index of chunk is 1
-  upload_file ();
+  upload_file (index);
 }
 
 //####################################################
 // Read files and write on server
 //####################################################
-function upload_file () {
+function upload_file (index) {
 // Upload chunks and adjustes progress bars
 
   // Define progressbar and percentage
@@ -136,7 +136,7 @@ function upload_file () {
       console.log (index);
       if (browser == "firefox") {
         worker_uploader.terminate ();
-        return upload_file ();
+        return upload_file (index);
       }
       else {
         return worker_reader.postMessage (chunk);

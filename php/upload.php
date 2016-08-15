@@ -78,7 +78,7 @@ if ($index == "1") {
   $cur_name = get_name();
   // Set path
   $path = "../uploads/file:" . $cur_name . ":" . $chunks_total . ":" . $file_size;
-  file_put_contents (log, $cur_name);
+  file_put_contents ("log", $cur_name);
   if (!file_exists ($path)) {
     mkdir ($path);
     chmod ($path, 0777);

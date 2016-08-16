@@ -9,6 +9,6 @@
 // http://www.gnu.org/copyleft/gpl.html
 //#####################################################
 onmessage = function(event) {
-  var reader = new FileReaderSync(); // Define reader
-  postMessage(reader.readAsArrayBuffer(event.data)); // Return data to main script
+	var reader = new FileReaderSync(); // Define reader
+	postMessage(reader.readAsArrayBuffer(event.data)); // Return data to main script
 }

@@ -12,12 +12,12 @@
 // Detect browser
 var str = "User-agent header: " + navigator.userAgent;
 if (str.match (/firefox/i)) {
-  browser = "firefox";
+	browser = "firefox";
 }
 else if (str.match (/chrome/i)) {
-  browser = "chrome";
+	browser = "chrome";
 }
 
 function start () {
-  list_files_on_server();
+	list_files_on_server();
 }

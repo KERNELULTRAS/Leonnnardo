@@ -1,6 +1,8 @@
 Leonnnardo
 ----
 
+![Leonnnardo](https://raw.githubusercontent.com/bedna-KU/Leonnnardo/master/source_image/screenshot.jpg)
+
 The project aim to upload/download multiple files and encrypt them on the client side.
 
 Currently in the development stage.

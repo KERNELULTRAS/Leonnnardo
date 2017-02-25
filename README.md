@@ -3,6 +3,7 @@ Leonnnardo
 
 ![Leonnnardo](https://raw.githubusercontent.com/bedna-KU/Leonnnardo/master/source_image/screenshot.jpg)
 
+Proof of concept.
 The project aim to upload/download multiple files and encrypt them on the client side.
 
 Currently in the development stage.
@@ -14,6 +15,7 @@ Currently in the development stage.
 
 ### Dependency:
 * ASMCrypto
+* idb.filesystem.js
 
 ### Now features:
 * Hudge (GB) file upload (split to chunks)

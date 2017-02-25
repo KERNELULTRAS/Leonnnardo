@@ -33,7 +33,6 @@
       <span class="slogan">encrypted upload and download huge file (the order of gigabytes)</span>
     </div>
     <div class = "status_bar">
-      <img class="head_shadow" src="images/shadow.png" alt="">
       <div id="status">Status:</div>
     </div>
     <div class = "upload_container">

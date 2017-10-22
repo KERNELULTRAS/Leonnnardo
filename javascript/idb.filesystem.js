@@ -22,7 +22,6 @@
  * "/one/two/" comes before "/one/two/ANYTHING" comes before "/one/two/0".
  *
  * @author Eric Bidelman (ebidel@gmail.com)
- * @version: 0.0.5
  */
 
 'use strict';
@@ -35,15 +34,78 @@ if (exports.requestFileSystem || exports.webkitRequestFileSystem) {
 }
 
 // Bomb out if no indexedDB available
-var indexedDB = exports.indexedDB || exports.mozIndexedDB ||
-                exports.msIndexedDB;
-if (!indexedDB)
-{
+const indexedDB = exports.indexedDB || exports.mozIndexedDB ||
+                  exports.msIndexedDB;
+if (!indexedDB) {
   return;
 }
 
-exports.TEMPORARY = 0;
-exports.PERSISTENT = 1;
+let IDB_SUPPORTS_BLOB = true;
+
+// Check to see if IndexedDB support blobs
+const support = function() {
+  var dbName = "blob-support";
+  indexedDB.deleteDatabase(dbName).onsuccess = function() {
+    var request = indexedDB.open(dbName, 1);
+    request.onerror = function() {
+      IDB_SUPPORTS_BLOB = false;
+    };
+    request.onsuccess = function() {
+      var db = request.result;
+      try {
+        var blob = new Blob(["test"], {type: "text/plain"});
+        var transaction = db.transaction("store", "readwrite");
+        transaction.objectStore("store").put(blob, "key");
+        IDB_SUPPORTS_BLOB = true;
+      } catch (err) {
+        IDB_SUPPORTS_BLOB = false;
+      } finally {
+        db.close();
+        indexedDB.deleteDatabase(dbName);
+      }
+    };
+    request.onupgradeneeded = function() {
+      request.result.createObjectStore("store");
+    };
+  };
+};
+
+const Base64ToBlob = function(dataURL) {
+  var BASE64_MARKER = ';base64,';
+  if (dataURL.indexOf(BASE64_MARKER) == -1) {
+    var parts = dataURL.split(',');
+    var contentType = parts[0].split(':')[1];
+    var raw = decodeURIComponent(parts[1]);
+
+    return new Blob([raw], {type: contentType});
+  }
+
+  var parts = dataURL.split(BASE64_MARKER);
+  var contentType = parts[0].split(':')[1];
+  var raw = window.atob(parts[1]);
+  var rawLength = raw.length;
+
+  var uInt8Array = new Uint8Array(rawLength);
+
+  for (var i = 0; i < rawLength; ++i) {
+    uInt8Array[i] = raw.charCodeAt(i);
+  }
+
+  return new Blob([uInt8Array], {type: contentType});
+};
+
+const BlobToBase64 = function(blob, onload) {
+  var reader = new FileReader();
+  reader.readAsDataURL(blob);
+  reader.onloadend = function() {
+    onload(reader.result);
+  };
+};
+
+if (!exports.PERSISTENT) {
+  exports.TEMPORARY = 0;
+  exports.PERSISTENT = 1;
+}
 
 // Prevent errors in browsers that don't support FileError.
 // TODO: FF 13+ supports DOM4 Events (DOMError). Use them instead?
@@ -52,8 +114,10 @@ if (exports.FileError === undefined) {
   FileError.prototype.prototype = Error.prototype;
 }
 
-FileError.INVALID_MODIFICATION_ERR = 9;
-FileError.NOT_FOUND_ERR  = 1;
+if (!FileError.INVALID_MODIFICATION_ERR) {
+  FileError.INVALID_MODIFICATION_ERR = 9;
+  FileError.NOT_FOUND_ERR  = 1;
+}
 
 function MyFileError(obj) {
   var code_ = obj.code;
@@ -78,28 +142,28 @@ function MyFileError(obj) {
     }
   });
 }
+
 MyFileError.prototype = FileError.prototype;
 MyFileError.prototype.toString = Error.prototype.toString;
 
-var INVALID_MODIFICATION_ERR = new MyFileError({
+const INVALID_MODIFICATION_ERR = new MyFileError({
       code: FileError.INVALID_MODIFICATION_ERR,
       name: 'INVALID_MODIFICATION_ERR'});
-var NOT_IMPLEMENTED_ERR = new MyFileError({code: 1000,
-                                           name: 'Not implemented'});
-var NOT_FOUND_ERR = new MyFileError({code: FileError.NOT_FOUND_ERR,
-                                     name: 'Not found'});
+const NOT_IMPLEMENTED_ERR = new MyFileError({code: 1000,
+                                             name: 'Not implemented'});
+const NOT_FOUND_ERR = new MyFileError({code: FileError.NOT_FOUND_ERR,
+                                       name: 'Not found'});
 
-var fs_ = null;
+let fs_ = null;
 
 // Browsers other than Chrome don't implement persistent vs. temporary storage.
 // but default to temporary anyway.
-var storageType_ = 'temporary';
-var idb_ = {};
-idb_.db = null;
-var FILE_STORE_ = 'entries';
+let storageType_ = 'temporary';
+const idb_ = {db: null};
+const FILE_STORE_ = 'entries';
 
-var DIR_SEPARATOR = '/';
-var DIR_OPEN_BOUND = String.fromCharCode(DIR_SEPARATOR.charCodeAt(0) + 1);
+const DIR_SEPARATOR = '/';
+const DIR_OPEN_BOUND = String.fromCharCode(DIR_SEPARATOR.charCodeAt(0) + 1);
 
 // When saving an entry, the fullPath should always lead with a slash and never
 // end with one (e.g. a directory). Also, resolve '.' and '..' to an absolute
@@ -109,46 +173,32 @@ function resolveToFullPath_(cwdFullPath, path) {
 
   var relativePath = path[0] != DIR_SEPARATOR;
   if (relativePath) {
-    fullPath = cwdFullPath;
-    if (cwdFullPath != DIR_SEPARATOR) {
-      fullPath += DIR_SEPARATOR + path;
-    } else {
-      fullPath += path;
-    }
+    fullPath = cwdFullPath + DIR_SEPARATOR + path;
   }
 
-  // Adjust '..'s by removing parent directories when '..' flows in path.
+  // Normalize '.'s,  '..'s and '//'s.
   var parts = fullPath.split(DIR_SEPARATOR);
+  var finalParts = [];
   for (var i = 0; i < parts.length; ++i) {
     var part = parts[i];
-    if (part == '..') {
-      parts[i - 1] = '';
-      parts[i] = '';
+    if (part === '..') {
+      // Go up one level.
+      if (!finalParts.length) {
+        throw Error('Invalid path');
+      }
+      finalParts.pop();
+    } else if (part === '.') {
+      // Skip over the current directory.
+    } else if (part !== '') {
+      // Eliminate sequences of '/'s as well as possible leading/trailing '/'s.
+      finalParts.push(part);
     }
   }
-  fullPath = parts.filter(function(el) {
-    return el;
-  }).join(DIR_SEPARATOR);
 
-  // Add back in leading slash.
-  if (fullPath[0] != DIR_SEPARATOR) {
-    fullPath = DIR_SEPARATOR + fullPath;
-  }
+  fullPath = DIR_SEPARATOR + finalParts.join(DIR_SEPARATOR);
 
-  // Replace './' by current dir. ('./one/./two' -> one/two)
-  fullPath = fullPath.replace(/\.\//g, DIR_SEPARATOR);
-
-  // Replace '//' with '/'.
-  fullPath = fullPath.replace(/\/\//g, DIR_SEPARATOR);
-
-  // Replace '/.' with '/'.
-  fullPath = fullPath.replace(/\/\./g, DIR_SEPARATOR);
-
-  // Remove '/' if it appears on the end.
-  if (fullPath[fullPath.length - 1] == DIR_SEPARATOR &&
-      fullPath != DIR_SEPARATOR) {
-    fullPath = fullPath.substring(0, fullPath.length - 1);
-  }
+  // fullPath is guaranteed to be normalized by construction at this point:
+  // '.'s, '..'s, '//'s will never appear in it.
 
   return fullPath;
 }
@@ -273,9 +323,7 @@ function FileWriter(fileEntry) {
     // TODO: not handling onprogress, onwrite, onabort. Throw an error if
     // they're defined.
 
-    if (!blob_) {
-      blob_ = new Blob([data], {type: data.type});
-    } else {
+    if (blob_) {
       // Calc the head and tail fragments
       var head = blob_.slice(0, position_);
       var tail = blob_.slice(position_ + data.size);
@@ -290,21 +338,35 @@ function FileWriter(fileEntry) {
       // TODO: figure out if data.type should overwrite the exist blob's type.
       blob_ = new Blob([head, new Uint8Array(padding), data, tail],
                        {type: blob_.type});
+    } else {
+      blob_ = new Blob([data], {type: data.type});
     }
 
-    // Set the blob we're writing on this file entry so we can recall it later.
-    fileEntry.file_.blob_ = blob_;
-    //fileEntry.file_.blob_.lastModifiedDate = data.lastModifiedDate || null;
-    fileEntry.file_.lastModifiedDate = data.lastModifiedDate || null;
+    const writeFile = function(blob) {
+      // Blob might be a DataURI depending on browser support.
+      fileEntry.file_.blob_ = blob;
+      fileEntry.file_.lastModifiedDate = data.lastModifiedDate || new Date();
+      idb_.put(fileEntry, function(entry) {
+        if (!IDB_SUPPORTS_BLOB) {
+          // Set the blob we're writing on this file entry so we can recall it later.
+          fileEntry.file_.blob_ = blob_;
+          fileEntry.file_.lastModifiedDate = data.lastModifiedDate || null;
+        }
 
-    idb_.put(fileEntry, function(entry) {
-      // Add size of data written to writer.position.
-      position_ += data.size;
+        // Add size of data written to writer.position.
+        position_ += data.size;
 
-      if (this.onwriteend) {
-        this.onwriteend();
-      }
-    }.bind(this), this.onerror);
+        if (this.onwriteend) {
+          this.onwriteend();
+        }
+      }.bind(this), this.onerror);
+    }.bind(this);
+
+    if (IDB_SUPPORTS_BLOB) {
+      writeFile(blob_);
+    } else {
+      BlobToBase64(blob_, writeFile);
+    }
   };
 }
 
@@ -456,6 +518,9 @@ function FileEntry(opt_fileEntry) {
     this.name = opt_fileEntry.name;
     this.fullPath = opt_fileEntry.fullPath;
     this.filesystem = opt_fileEntry.filesystem;
+    if (typeof(this.file_.blob_) === "string") {
+      this.file_.blob_ = Base64ToBlob(this.file_.blob_);
+    }
   }
 }
 FileEntry.prototype = new Entry();
@@ -711,10 +776,27 @@ function requestFileSystem(type, size, successCallback, opt_errorCallback) {
   }, opt_errorCallback);
 }
 
-function resolveLocalFileSystemURL(url, callback, opt_errorCallback) {
-  if (opt_errorCallback) {
-    opt_errorCallback(NOT_IMPLEMENTED_ERR);
-    return;
+function resolveLocalFileSystemURL(url, successCallback, opt_errorCallback) {
+  var origin = location.protocol + '//' + location.host;
+  var base = 'filesystem:' + origin + DIR_SEPARATOR + storageType_.toLowerCase();
+  url = url.replace(base, '');
+  if (url.substr(-1) === '/') {
+    url = url.slice(0, -1);
+  }
+  if (url) {
+    idb_.get(url, function(entry) {
+      if (entry) {
+        if (entry.isFile) {
+          return successCallback(new FileEntry(entry));
+        } else if (entry.isDirectory) {
+          return successCallback(new DirectoryEntry(entry));
+        }
+      } else {
+        opt_errorCallback && opt_errorCallback(NOT_FOUND_ERR);
+      }
+    }, opt_errorCallback);
+  } else {
+    successCallback(fs_.root);
   }
 }
 
@@ -897,7 +979,7 @@ function onError(e) {
 // Clean up.
 // TODO: decide if this is the best place for this.
 exports.addEventListener('beforeunload', function(e) {
-  idb_.db.close();
+  idb_.db && idb_.db.close();
 }, false);
 
 //exports.idb = idb_;
@@ -911,6 +993,7 @@ if (exports === window && exports.RUNNING_TESTS) {
   exports['DirectoryEntry'] = DirectoryEntry;
   exports['resolveToFullPath_'] = resolveToFullPath_;
   exports['Metadata'] = Metadata;
+  exports['Base64ToBlob'] = Base64ToBlob;
 }
 
 })(self); // Don't use window because we want to run in workers.

@@ -30,7 +30,7 @@
   <body onload = "start()">
     <div class = "head">
       <span class="name">Leonnnardo</span>
-      <span class="slogan">encrypted upload and download huge file (the order of gigabytes)</span>
+      <span class="slogan">encrypted upload and download huge files</span>
     </div>
     <div class = "status_bar">
       <div id="status">Status:</div>
@@ -55,6 +55,7 @@
         <button onclick = "mkdir_on_server(getElementById('dir_name').value)">Make directory</button>
         <p class = "download_table"><a id = "download_link" download></a></p>
         <p id = "files"></p>
+        <span id = "download_status"></span>
       </div>
     </div>
   </body>

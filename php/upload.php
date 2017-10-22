@@ -23,7 +23,7 @@ $chunks_total = $_SERVER['HTTP_X_CHUNKS_TOTAL']; // Total of chunks
 // If directory don't exist create him
 if (!is_dir("../uploads/")) {
 	mkdir("../uploads/");
-	chmod("../uploads/", 0777);
+	chmod("../uploads/", 0666);
 }
 
 // file_put_contents ("log" . $index, $cur_name);
@@ -83,13 +83,13 @@ if ($index == "1") {
 		mkdir ($path);
 		chmod ($path, 0777);
 		file_put_contents ($path . '/' . 'name', $file_name);
-		chmod ($path . "/"."name", 0777);
+		chmod ($path . "/"."name", 0666);
 	}
 	$target = $path . "/" . $index;
 	// Get sended data
 	$input = fopen ("php://input", "r");
 	file_put_contents ($target, $input);
-	chmod ($path . "/" . $index, 0777);
+	chmod ($path . "/" . $index, 0666);
 	if ($chunks_total == 1) {
 		$file_time = time();
 		rename ($path, $path . ":" . $file_time);
@@ -104,7 +104,7 @@ else {
 	// Get sended data
 	$input = fopen ("php://input", "r");
 	file_put_contents ($target, $input);
-	chmod ($path . "/" . $index, 0777);
+	chmod ($path . "/" . $index, 0666);
 	if ($index == $chunks_total) {
 		$file_time = time();
 		rename ($path, $path . ":" . $file_time);

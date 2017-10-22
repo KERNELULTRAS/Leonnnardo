@@ -10,6 +10,7 @@
 //#####################################################
 
 function download (file_name, file_name_dec) {
+	window.localStorage.clear();
 	// Extract file parameters
 	var file_parameters = file_name.split (":");
 	// Get total file chunks
@@ -20,11 +21,16 @@ function download (file_name, file_name_dec) {
 	var blob = new Blob ();
 	// First index of chunks
 	var index = 1;
+	// Define progressbar
+	var progress_bar_download = document.getElementById ("progress_bar_download");
+
+	// Show progress bar
+	download_status.innerHTML = '<progress id = "progress_bar_download" value = "0" max = "100"></progress>';
 
 	window.requestFileSystem  = window.requestFileSystem || window.webkitRequestFileSystem;
 
 	document.getElementById ("status").innerHTML = "Creating temporrary space";
-	window.requestFileSystem (window.TEMPORARY, file_size, function (filesystem) {var fs = filesystem; isFileInFS (fs, file_name, file_name_dec, chunks_total, index);}, errorHandler);
+	window.requestFileSystem (TEMPORARY, file_size, function (filesystem) {var fs = filesystem; isFileInFS (fs, file_name, file_name_dec, chunks_total, index);}, errorHandler);
 }
 
 // As exists previous file
@@ -50,25 +56,26 @@ function isFileInFS (fs, file_name, file_name_dec, chunks_total, index) {
 
 // Remove file
 function rmFileFS (fs, file_name, file_name_dec, chunks_total, index) {
-	var dirReader = fs.root.createReader ();
-	dirReader.readEntries (function (entries) {
-	for (var i = 0, entry; entry = entries[i]; ++i) {
+	fs.root.createReader().readEntries(function(results) {
+    [].forEach.call(results, function(entry) {
+		console.log (entry);
 		if (entry.isDirectory) {
 		  entry.removeRecursively (function() {}, errorHandler);
 		} else {
 		  entry.remove (function() {}, errorHandler);
 		}
-	}
+	});
+    //~ getAllEntries(fs.root);
 	document.getElementById ("status").innerHTML = "Reading file from server " + index + "/" + chunks_total;
 	readServerFile (fs, file_name, file_name_dec, chunks_total, index);
 	}, errorHandler);
 }
 
-
-
 // Read file (chunk) on server
 function readServerFile (fs, file_name, file_name_dec, chunks_total, index) {
 	document.getElementById ("status").innerHTML = "Reading file from server " + index + "/" + chunks_total;
+	progress_bar_download.max = chunks_total;
+    progress_bar_download.value = index;
 	var d1 = new Date ();
 	var n1 = d1.getTime();
 	// New XHR2
@@ -108,6 +115,8 @@ function writeFs (fs, file_name, file_name_dec, chunks_total, index, blob) {
 			fileWriter.onwriteend = function(e) {
 			// If download all chunks make link to save file
 			if (index >= chunks_total) {
+				progress_bar_download.value = 0;
+				download_status.innerHTML = '';
 				document.getElementById ("status").innerHTML = "File successfully downloaded";
 				if (browser == "chrome") {
 					// Link to temporrary local storage
@@ -160,4 +169,158 @@ function toURL(entry) {
 	}
 
 	return window.URL.createObjectURL(blob);
+}
+
+function getAllEntries(dirEntry) {
+  dirEntry.createReader().readEntries(function(results) {
+    html = [];
+    // var paths = results.map(function(el) { return el.fullPath.substring(1); });
+    // renderFromPathObj(buildFromPathList(paths));
+    // document.querySelector('#entries2').innerHTML = html.join('');
+
+    var frag = document.createDocumentFragment();
+    // Native readEntries() returns an EntryArray, which doesn't have forEach.
+    [].forEach.call(results, function(entry) {
+      var li = document.createElement('li');
+      li.dataset.type = entry.isFile ? 'file' : 'folder';
+
+      var deleteLink = document.createElement('a');
+      deleteLink.href = '';
+      deleteLink.innerHTML = '<img src="images/icons/delete.svg" alt="Delete this" title="Delete this">';
+      deleteLink.classList.add('delete');
+      deleteLink.onclick = function(e) {
+        e.preventDefault();
+
+        if (entry.isDirectory) {
+          entry.removeRecursively(function() {
+          logger.log('<p>Removed ' + entry.name + '</p>');
+          getAllEntries(window.cwd);
+        });
+        } else {
+          entry.remove(function() {
+          logger.log('<p>Removed ' + entry.name + '</p>');
+          getAllEntries(window.cwd);
+        });
+        }
+        return false;
+      };
+
+      var span = document.createElement('span');
+      span.appendChild(deleteLink);
+
+      if (entry.isFile) {
+
+        entry.file(function(f) {
+
+          var size = Math.round(f.size * 100 / (1024 * 1024)) / 100;
+          span.title = size + 'MB';
+
+          if (size < 1) {
+            size = Math.round(f.size * 100 / 1024) / 100;
+            span.title = size + 'KB';
+          }
+
+          span.title += ', last modified: ' +
+                        f.lastModifiedDate.toLocaleDateString();
+
+          if (f.type.match('audio/') || f.type.match('video/ogg')) {
+
+            var audio = new Audio();
+
+            if (audio.canPlayType(f.type)) {
+              audio.src = window.URL.createObjectURL(f);
+              //audio.type = f.type;
+              //audio.controls = true;
+              audio.onended = function(e) {
+                window.URL.revokeObjectURL(this.src);
+              };
+
+              var a = document.createElement('a');
+              a.href = '';
+              a.dataset.fullPath = entry.fullPath;
+              a.textContent = entry.fullPath;
+              a.appendChild(audio);
+              a.onclick = playPauseAudio;
+
+              span.appendChild(a);
+            } else {
+              span.appendChild(document.createTextNode(entry.fullPath + " (can't play)"));
+            }
+          } else {
+            var a = document.createElement('a');
+            a.href = '';
+            a.textContent = entry.fullPath;
+
+            a.onclick = function(e) {
+              e.preventDefault();
+
+              var iframe = preview.querySelector('iframe');
+              if (!iframe) {
+                iframe = document.createElement('iframe');
+              } else {
+                window.URL.revokeObjectURL(iframe.src);
+              }
+
+              preview.innerHTML = '';
+
+              if (this.classList.contains('active')) {
+                this.classList.remove('active');
+                return;
+              } else {
+                this.classList.add('active');
+              }
+
+              iframe.src = window.URL.createObjectURL(f);
+              preview.innerHTML = '';
+              preview.appendChild(iframe);
+
+              return false;
+            };
+
+            span.appendChild(a)
+          }
+
+          /*var img = document.createElement('img');
+          img.src = 'images/icons/file.png';
+          img.title = 'This item is a file';
+          img.alt = img.title;
+          span.appendChild(img);*/
+
+          li.appendChild(span);
+        }, errorHandler);
+      } else {
+        var span2 = document.createElement('span');
+
+        var folderLink = document.createElement('a');
+        folderLink.textContent = entry.fullPath;
+        folderLink.href = '';
+        folderLink.onclick = function(e) {
+          e.preventDefault();
+          cwd.getDirectory(this.textContent, {}, function(dirEntry) {
+            window.cwd = dirEntry; // TODO: not sure why we need to use window.cwd here.
+            getAllEntries(dirEntry);
+          }, errorHandler);
+          return false;
+        };
+
+        span2.appendChild(folderLink);
+        span.appendChild(span2);
+        span.classList.add('bold');
+        var img = document.createElement('img');
+        img.src = 'images/icons/folder.png';
+        img.alt = 'This item is a folder';
+        img.title = img.alt;
+        span.title = img.alt;
+        span.appendChild(img);
+
+        li.appendChild(span);
+      }
+      frag.appendChild(li);
+    });
+
+    var entries = document.querySelector('#entries');
+    entries.innerHTML = '<ul></ul>';
+    entries.appendChild(frag);
+
+  }, errorHandler);
 }

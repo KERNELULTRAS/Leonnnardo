@@ -9,15 +9,15 @@
 // http://www.gnu.org/copyleft/gpl.html
 //#####################################################
 function list_files_on_server () {
-
+	// Set XHR request
 	var xhr = new XMLHttpRequest ();
-
 	// Call php script
 	xhr.open ("POST", "php/list_files_on_server.php", false);
 	xhr.send ();
 	var json_data_files = (xhr.responseText);
-	// Parse to diles to array
+	// If list of files no empty
 	if (json_data_files != "empty" && json_data_files != "error_perm") {
+		// Parse files to array
 		var obj_files = JSON.parse (json_data_files);
 		console.log (obj_files);
 		var files = "";
@@ -25,6 +25,7 @@ function list_files_on_server () {
 		files += '<tr><td>File name</td><td>File size</td><td>Time created</td><td></td></tr>';
 		// Print files
 		for (var index in obj_files) {
+			// Only files which ones not begging with dot
 			if (index.substring(0, 1) != ".") {
 				// Extract file parameters
 				var file_parameters = index.split(":");
@@ -80,7 +81,21 @@ function list_files_on_server () {
 		document.getElementById ("files").innerHTML = files;
 		// document.getElementById ("status").innerHTML = "File list successfully";
 	}
+	// Permissions denied
 	else if (json_data_files == "error_perm") {
-		document.getElementById ("files").innerHTML = "ERROR NO PERMISSIONS";
-	}  
+		document.getElementById ("files").innerHTML = "ERROR: PERMISSIONS DENIED";
+	}
+	// If no files uploaded
+	else if (json_data_files == "empty") {
+		var files = "";
+		files = '<table>';
+		files += '<tr><td>File name</td><td>File size</td><td>Time created</td><td></td></tr>';
+		files += '</table>';
+		// Write files to element "files"
+		document.getElementById ("files").innerHTML = files;
+	}
+	// Unknown errot
+	else {
+		document.getElementById ("files").innerHTML = "ERROR " + json_data_files;
+	}
 }

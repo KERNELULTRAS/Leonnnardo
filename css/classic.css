@@ -251,7 +251,7 @@ strong {
 	width: 53%;
 	float: left;
 	margin: 1% 0 0 1%;
-	padding: 0;
+	padding: 0 0 10px 0;
 	border: 3px solid #555555;
 }
 
@@ -313,6 +313,18 @@ td {
 }
 
 #progress_bar::-webkit-progress-bar {
+  width: 20px;
+  background: url('progress.png');
+  margin: 0;
+}
+
+#progress_bar_download::-moz-progress-bar {
+  width: 20px;
+  background: url('progress.png');
+  margin: 0;
+}
+
+#progress_bar_download::-webkit-progress-bar {
   width: 20px;
   background: url('progress.png');
   margin: 0;
